@@ -1,0 +1,11 @@
+scc\srv\resources\MainApplication.class
+scc\srv\resources\MediaResource.class
+scc\srv\interfaces\UserResourceInterface.class
+scc\srv\resources\ControlResource.class
+scc\utils\Hash.class
+scc\utils\UserDAO.class
+scc\srv\resources\HouseResource.class
+scc\utils\User.class
+scc\srv\interfaces\HouseResourceInterface.class
+scc\srv\interfaces\MediaResourceInterface.class
+scc\srv\resources\UserResource.class
