@@ -5,11 +5,12 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.QueryParam;
+import scc.utils.House;
 
 public interface HouseResourceInterface {
 
     @POST
-    public void createHouse();
+    public String createHouse(House house);
 
     @DELETE
     public void deleteHouse();

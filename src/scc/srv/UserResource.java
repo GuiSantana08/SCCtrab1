@@ -9,6 +9,7 @@ import redis.clients.jedis.Jedis;
 import scc.cache.RedisCache;
 import scc.db.UserDBLayer;
 import scc.interfaces.UserResourceInterface;
+import scc.utils.User;
 import scc.utils.UserDAO;
 
 public class UserResource implements UserResourceInterface {
@@ -17,9 +18,10 @@ public class UserResource implements UserResourceInterface {
   UserDBLayer userDb = UserDBLayer.getInstance();
 
   @Override
-  public String createUser(UserDAO user) {
+  public String createUser(User us) {
     try {
       try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+        UserDAO user = new UserDAO(us);
         CosmosItemResponse<UserDAO> u = userDb.putUser(user);
         jedis.set(user.getId(), mapper.writeValueAsString(user));
         return mapper.writeValueAsString(u);

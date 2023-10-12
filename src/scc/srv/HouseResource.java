@@ -1,13 +1,33 @@
 package scc.srv;
 
+import com.azure.cosmos.models.CosmosItemResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import redis.clients.jedis.Jedis;
+import scc.cache.RedisCache;
+import scc.db.HouseDBLayer;
+import scc.db.UserDBLayer;
 import scc.interfaces.HouseResourceInterface;
+import scc.utils.House;
+import scc.utils.HouseDAO;
+import scc.utils.UserDAO;
 
 public class HouseResource implements HouseResourceInterface {
 
+    ObjectMapper mapper = new ObjectMapper();
+    HouseDBLayer houseDb = HouseDBLayer.getInstance();
+
     @Override
-    public void createHouse() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createHouse'");
+    public String createHouse(House house) {
+        try {
+            try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+                HouseDAO hDAO = new HouseDAO(house);
+                CosmosItemResponse<HouseDAO> h = houseDb.putHouse(hDAO);
+                jedis.set(hDAO.getId(), mapper.writeValueAsString(hDAO));
+                return mapper.writeValueAsString(h);
+            }
+        } catch (Exception e) {
+            return e.getMessage();
+        }
     }
 
     @Override

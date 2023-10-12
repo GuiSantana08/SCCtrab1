@@ -7,13 +7,14 @@ import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import scc.utils.User;
 import scc.utils.UserDAO;
 
 public interface UserResourceInterface {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public String createUser(UserDAO user);
+    public String createUser(User user);
 
     @DELETE
     public void deleteUser(@QueryParam("userId") String userId);
