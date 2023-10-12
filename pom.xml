@@ -95,7 +95,11 @@
 			<artifactId>resteasy-jackson2-provider</artifactId>
 			<version>6.2.5.Final</version>
 		</dependency>
-
+		<dependency>
+      		<groupId>redis.clients</groupId>
+      		<artifactId>jedis</artifactId>
+      		<version>5.0.1</version>
+    	</dependency>
 	</dependencies>
 	<build>
 		<sourceDirectory>src</sourceDirectory>

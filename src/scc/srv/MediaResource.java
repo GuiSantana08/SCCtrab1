@@ -1,11 +1,5 @@
 package scc.srv;
 
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.azure.core.util.BinaryData;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
@@ -23,15 +17,13 @@ import scc.utils.Hash;
  * Resource for managing media files, such as images.
  */
 @Path("/media")
-public class MediaResource
-{
-	Map<String,byte[]> map = new HashMap<String,byte[]>();
-
+public class MediaResource {
 	String storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=scc2223lab2;AccountKey=aKo5p8YMR6kaaXQdYpakkzC1KDS0rKibpazF4dyV0MpL2ezGcRjzOJEuzCVYZ2lPsgCMWi5L37c/+AStrnDibA==;EndpointSuffix=core.windows.net";
 	BlobContainerClient containerClient = new BlobContainerClientBuilder()
 			.connectionString(storageConnectionString)
 			.containerName("images")
 			.buildClient();
+
 	/**
 	 * Post a new image.The id of the image is its hash.
 	 */
@@ -58,15 +50,5 @@ public class MediaResource
 		BinaryData data = blob.downloadContent();
 		return data.toBytes();
 
-	}
-
-	/**
-	 * Lists the ids of images stored.
-	 */
-	@GET
-	@Path("/")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<String> list() {
-		return new ArrayList<String>( map.keySet());
 	}
 }

@@ -13,28 +13,28 @@ import com.azure.cosmos.util.CosmosPagedIterable;
 
 import scc.utils.UserDAO;
 
-public class CosmosDBLayer {
+public class UserDBLayer {
     private static final String CONNECTION_URL = "https://cosmos-scc.documents.azure.com:443/";
     private static final String DB_KEY = "3yJ9ApcLNiJpbJJEPHDS04cbSBZygR3mmcUfeCGnJeJNP1opXQ4Nsofyec5WUtIGxN9NlxszDSZ4ACDb38RUqg==";
     private static final String DB_NAME = "scc-58201";
 
-    private static CosmosDBLayer instance;
+    private static UserDBLayer instance;
 
-    public static synchronized CosmosDBLayer getInstance() {
-        if( instance != null)
+    public static synchronized UserDBLayer getInstance() {
+        if (instance != null)
             return instance;
 
         CosmosClient client = new CosmosClientBuilder()
                 .endpoint(CONNECTION_URL)
                 .key(DB_KEY)
-                //.directMode()
+                // .directMode()
                 .gatewayMode()
                 // replace by .directMode() for better performance
                 .consistencyLevel(ConsistencyLevel.SESSION)
                 .connectionSharingAcrossClientsEnabled(true)
                 .contentResponseOnWriteEnabled(true)
                 .buildClient();
-        instance = new CosmosDBLayer( client);
+        instance = new UserDBLayer(client);
         return instance;
 
     }
@@ -43,12 +43,12 @@ public class CosmosDBLayer {
     private CosmosDatabase db;
     private CosmosContainer users;
 
-    public CosmosDBLayer(CosmosClient client) {
+    public UserDBLayer(CosmosClient client) {
         this.client = client;
     }
 
     private synchronized void init() {
-        if( db != null)
+        if (db != null)
             return;
         db = client.getDatabase(DB_NAME);
         users = db.getContainer("users");
@@ -57,7 +57,7 @@ public class CosmosDBLayer {
 
     public CosmosItemResponse<Object> delUserById(String id) {
         init();
-        PartitionKey key = new PartitionKey( id);
+        PartitionKey key = new PartitionKey(id);
         return users.deleteItem(id, key, new CosmosItemRequestOptions());
     }
 
@@ -71,9 +71,16 @@ public class CosmosDBLayer {
         return users.createItem(user);
     }
 
-    public CosmosPagedIterable<UserDAO> getUserById( String id) {
+    public CosmosItemResponse<UserDAO> updateUser(String id, UserDAO user) {
         init();
-        return users.queryItems("SELECT * FROM users WHERE users.id=\"" + id + "\"", new CosmosQueryRequestOptions(), UserDAO.class);
+        PartitionKey key = new PartitionKey(id);
+        return users.replaceItem(user, id, key, new CosmosItemRequestOptions());
+    }
+
+    public CosmosPagedIterable<UserDAO> getUserById(String id) {
+        init();
+        return users.queryItems("SELECT * FROM users WHERE users.id=\"" + id + "\"", new CosmosQueryRequestOptions(),
+                UserDAO.class);
     }
 
     public CosmosPagedIterable<UserDAO> getUsers() {
@@ -84,6 +91,5 @@ public class CosmosDBLayer {
     public void close() {
         client.close();
     }
-
 
 }
