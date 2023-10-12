@@ -1,8 +1,0 @@
-scc\srv\MediaResource.class
-scc\utils\Hash.class
-scc\srv\ControlResource.class
-scc\utils\UserDAO.class
-scc\utils\User.class
-scc\db\CosmosDBLayer.class
-scc\srv\MainApplication.class
-scc\srv\UserResource.class
