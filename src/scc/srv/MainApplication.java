@@ -17,6 +17,7 @@ public class MainApplication extends Application {
 		resources.add(RentalResource.class);
 		resources.add(QuestionResource.class);
 		resources.add(MediaResource.class);
+		//TODO: Media Resource is singleton?
 		singletons.add(UserDBLayer.getInstance());
 		singletons.add(HouseDBLayer.getInstance());
 	}

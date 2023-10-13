@@ -1,8 +1,11 @@
 package scc.srv;
 
 import com.azure.cosmos.models.CosmosItemResponse;
+import com.azure.cosmos.util.CosmosPagedIterable;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import redis.clients.jedis.Jedis;
+
 import scc.cache.RedisCache;
 import scc.db.HouseDBLayer;
 import scc.db.UserDBLayer;
@@ -31,21 +34,48 @@ public class HouseResource implements HouseResourceInterface {
     }
 
     @Override
-    public void deleteHouse() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteHouse'");
+    public void deleteHouse(String id) {
+        try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+            houseDb.delHouseById(id);
+            jedis.del(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void updateHouse() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateHouse'");
+    public String updateHouse(HouseDAO house, String oldId) {
+        try {
+            try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+                CosmosItemResponse<HouseDAO> h = houseDb.updateHouse(oldId, house);
+                jedis.set(house.getId(), mapper.writeValueAsString(house));
+                return mapper.writeValueAsString(h);
+            }
+        } catch (JsonProcessingException e) {
+            return e.getMessage();
+        }
     }
 
     @Override
     public void listAvailableHouses(String location) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'listAvailableHouses'");
+        try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+            String res = jedis.get(location);
+            if (res == null) {
+                CosmosPagedIterable<HouseDAO> h = houseDb.getHouseById(location);
+                if (h.iterator().hasNext()) {
+                    for (String hId : h.iterator().next().getHouseLocations()) {
+                        // TODO
+                    }
+                }
+            }
+            HouseDAO h = mapper.readValue(res, HouseDAO.class);
+            for (String hId : h.getHouseLocations()) {
+                // TODO
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

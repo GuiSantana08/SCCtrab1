@@ -1,17 +1,16 @@
 package scc.utils;
 
-public class RentalDAO {
-    String id;
-    House house;
-    User rentingUser;
-    int rentalPeriod;
-    int price;
+public class Rental {
+    private String id;
+    private House house;
 
-    public RentalDAO(Rental r) {
-        this(r.getId(), r.getHouse(), r.getRentingUser(), r.getRentalPeriod(), r.getPrice());
-    }
+    private User rentingUser;
 
-    public RentalDAO(String id, House house, User rentingUser, int rentalPeriod, int price) {
+    private int rentalPeriod;
+
+    private int price;
+
+    public Rental(String id, House house, User rentingUser, int rentalPeriod, int price) {
         this.id = id;
         this.house = house;
         this.rentingUser = rentingUser;
@@ -19,9 +18,13 @@ public class RentalDAO {
         this.price = price;
     }
 
-    public String getId() {return this.id;}
+    public String getId() {
+        return this.id;
+    }
 
-    public void setId(String id) {this.id = id;}
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public House getHouse() {
         return this.house;
@@ -50,9 +53,4 @@ public class RentalDAO {
     public int getPrice() {
         return this.price;
     }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
-
 }
