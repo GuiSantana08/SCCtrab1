@@ -1,8 +1,5 @@
 package scc.srv;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.azure.cosmos.CosmosException;
 import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.util.CosmosPagedIterable;
@@ -80,23 +77,6 @@ public class RentalResource implements RentalResourceInterface {
     public void listDiscountedRentals() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'listDiscountedRentals'");
-    }
-
-    public Response getRentals() {
-        List<RentalDAO> rentals = new ArrayList<>();
-        try {
-            CosmosPagedIterable<RentalDAO> u = rentalDB.getRentals();
-
-            while (u.iterator().hasNext()) {
-                rentals.add(u.iterator().next());
-            }
-
-            return Response.ok(rentals).build();
-        } catch (CosmosException c) {
-            return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
-        } catch (Exception e) {
-            return Response.status(500).entity(e.getMessage()).build();
-        }
     }
 
 }

@@ -44,6 +44,8 @@ public class UserResource implements UserResourceInterface {
       userDb.delUserById(id);
       jedis.del(id);
       return Response.ok().build();
+      // TODO: when deleted, all houses and rentals of said user chould change to
+      // Deleted User!
     } catch (CosmosException c) {
       return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
     } catch (Exception e) {

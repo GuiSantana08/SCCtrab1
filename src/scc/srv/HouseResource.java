@@ -1,14 +1,10 @@
 package scc.srv;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.azure.cosmos.CosmosException;
 import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.util.CosmosPagedIterable;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
 import redis.clients.jedis.Jedis;
 
@@ -17,7 +13,6 @@ import scc.db.HouseDBLayer;
 import scc.interfaces.HouseResourceInterface;
 import scc.utils.House;
 import scc.utils.HouseDAO;
-import scc.utils.RentalDAO;
 
 public class HouseResource implements HouseResourceInterface {
 
@@ -71,20 +66,8 @@ public class HouseResource implements HouseResourceInterface {
 
     @Override
     public Response listAvailableHouses(String location) {
-        List<HouseDAO> availableHouse = new ArrayList<>();
         try {
-            CosmosPagedIterable<HouseDAO> h = houseDb.getHouseByLocation(location);
-            RentalResource rR = new RentalResource();
-            List<RentalDAO> rentals = rR.getRentals().readEntity(new GenericType<List<RentalDAO>>() {
-            });
-            while (h.iterator().hasNext()) {
-                for (RentalDAO r : rentals) {
-                    HouseDAO house = h.iterator().next();
-                    if (!new HouseDAO(r.getHouse()).equals(house))
-                        availableHouse.add(house);
-                }
-            }
-            return Response.ok(availableHouse).build();
+            return Response.ok().build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {

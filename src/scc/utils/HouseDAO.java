@@ -8,6 +8,7 @@ public class HouseDAO {
     private String location;
     private String description;
     private String photoId;
+    // TODO: make the availability system
 
     public HouseDAO(House h) {
         this(h.getId(), h.getName(), h.getLocation(), h.getDescription(), h.getPhotoId());
