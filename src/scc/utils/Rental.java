@@ -3,11 +3,8 @@ package scc.utils;
 public class Rental {
     private String id;
     private House house;
-
     private User rentingUser;
-
     private int rentalPeriod;
-
     private int price;
 
     public Rental(String id, House house, User rentingUser, int rentalPeriod, int price) {

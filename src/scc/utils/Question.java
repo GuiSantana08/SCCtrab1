@@ -1,38 +1,15 @@
 package scc.utils;
 
-public class QuestionDAO {
-    private String _rid;
-    private String _ts;
+public class Question {
     private String id;
     private House house;
     private User postUser;
     private String textMessage;
 
-    public QuestionDAO(Question q) {
-        this(q.getId(), q.getHouse(), q.getPostUser(), q.getTextMessage());
-    }
-
-    public QuestionDAO(String id, House house, User postUser, String textMessage) {
-        this.id = id;
+    public Question(House house, User postUser, String textMessage) {
         this.house = house;
         this.postUser = postUser;
         this.textMessage = textMessage;
-    }
-
-    public String get_rid() {
-        return this._rid;
-    }
-
-    public void set_rid(String _rid) {
-        this._rid = _rid;
-    }
-
-    public String get_ts() {
-        return this._ts;
-    }
-
-    public void set_ts(String _ts) {
-        this._ts = _ts;
     }
 
     public String getId() {

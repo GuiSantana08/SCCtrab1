@@ -77,8 +77,8 @@ public class RentalDBLayer {
 
     public CosmosPagedIterable<RentalDAO> getRentalById(String id) {
         init();
-        PartitionKey key = new PartitionKey(id);
-        return rentals.queryItems("SELECT * FROM rentals WHERE rentals.id=\"" + id + "\"", new CosmosQueryRequestOptions(),
+        return rentals.queryItems("SELECT * FROM rentals WHERE rentals.id=\"" + id + "\"",
+                new CosmosQueryRequestOptions(),
                 RentalDAO.class);
     }
 

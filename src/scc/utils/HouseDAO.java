@@ -9,21 +9,17 @@ public class HouseDAO {
     private String description;
     private String photoId;
 
-    private String[] houseLocations;
-
     public HouseDAO(House h) {
-        this(h.getId(), h.getName(), h.getLocation(), h.getDescription(), h.getPhotoId(), h.getHouseLocations());
+        this(h.getId(), h.getName(), h.getLocation(), h.getDescription(), h.getPhotoId());
     }
 
-    public HouseDAO(String id, String name, String location, String description, String photoId, String[] houseLocations) {
+    public HouseDAO(String id, String name, String location, String description, String photoId) {
         super();
         this.id = id;
         this.name = name;
         this.location = location;
         this.description = description;
         this.photoId = photoId;
-        this.houseLocations = houseLocations;
-
     }
 
     public String get_rid() {
@@ -82,18 +78,9 @@ public class HouseDAO {
         this.photoId = photoId;
     }
 
-    public String[] getHouseLocations() {
-        return houseLocations == null ? new String[0] : houseLocations;
-    }
-
-    public void setHouseLocations(String[] houseLocations) {
-        this.houseLocations = houseLocations;
-    }
-
     @Override
     public String toString() {
         return "HouseDAO [_rid=" + _rid + ", _ts=" + _ts + ", id=" + id + ", name=" + name + ", location=" + location
-                + ", description=" + description + ", photoId=" + photoId + ", houseLocations="
-                + java.util.Arrays.toString(houseLocations) + "]";
+                + ", description=" + description + ", photoId=" + photoId + "]";
     }
 }

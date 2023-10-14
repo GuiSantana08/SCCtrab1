@@ -1,7 +1,5 @@
 package scc.utils;
 
-import java.util.Arrays;
-
 public class House {
 
     private String id;
@@ -9,9 +7,7 @@ public class House {
     private String location;
     private String description;
     private String photoId;
-
-    private String[] houseLocations;
-
+    // TODO: should have an associated user, the owner
 
     public House(String id, String name, String location, String description, String photoId) {
         super();
@@ -63,17 +59,9 @@ public class House {
         this.photoId = photoId;
     }
 
-    public String[] getHouseLocations() {
-        return houseLocations == null ? new String[0] : houseLocations;
-    }
-
-    public void setHouseLocations(String[] houseLocations) {
-        this.houseLocations = houseLocations;
-    }
-
     @Override
     public String toString() {
         return "House [id=" + id + ", name=" + name + ", location=" + location + ", description=" + description
-                + ", photoId=" + photoId + ", houseLocations=" + Arrays.toString(houseLocations) + "]";
+                + ", photoId=" + photoId + "]";
     }
 }

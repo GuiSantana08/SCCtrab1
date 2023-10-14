@@ -1,26 +1,22 @@
 package scc.db;
 
-import com.azure.cosmos.ConsistencyLevel;
-import com.azure.cosmos.CosmosClient;
-import com.azure.cosmos.CosmosClientBuilder;
-import com.azure.cosmos.CosmosContainer;
-import com.azure.cosmos.CosmosDatabase;
+import com.azure.cosmos.*;
 import com.azure.cosmos.models.CosmosItemRequestOptions;
 import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
+import scc.utils.QuestionDAO;
 
-import scc.utils.HouseDAO;
+public class QuestionDBLayer {
 
-public class HouseDBLayer {
     private static final String CONNECTION_URL = "https://cosmos-scc.documents.azure.com:443/";
     private static final String DB_KEY = "3yJ9ApcLNiJpbJJEPHDS04cbSBZygR3mmcUfeCGnJeJNP1opXQ4Nsofyec5WUtIGxN9NlxszDSZ4ACDb38RUqg==";
     private static final String DB_NAME = "scc-58201";
 
-    private static HouseDBLayer instance;
+    private static QuestionDBLayer instance;
 
-    public static synchronized HouseDBLayer getInstance() {
+    public static synchronized QuestionDBLayer getInstance() {
         if (instance != null)
             return instance;
 
@@ -34,16 +30,17 @@ public class HouseDBLayer {
                 .connectionSharingAcrossClientsEnabled(true)
                 .contentResponseOnWriteEnabled(true)
                 .buildClient();
-        instance = new HouseDBLayer(client);
+        instance = new QuestionDBLayer(client);
         return instance;
-
     }
 
     private CosmosClient client;
-    private CosmosDatabase db;
-    private CosmosContainer house;
 
-    public HouseDBLayer(CosmosClient client) {
+    private CosmosDatabase db;
+
+    private CosmosContainer questions;
+
+    public QuestionDBLayer(CosmosClient client) {
         this.client = client;
     }
 
@@ -51,49 +48,43 @@ public class HouseDBLayer {
         if (db != null)
             return;
         db = client.getDatabase(DB_NAME);
-        house = db.getContainer("houses");
-
+        questions = db.getContainer("questions");
     }
 
-    public CosmosItemResponse<Object> delHouseById(String id) {
+    public CosmosItemResponse<Object> delQuestionById(String id) {
         init();
         PartitionKey key = new PartitionKey(id);
-        return house.deleteItem(id, key, new CosmosItemRequestOptions());
+        CosmosItemRequestOptions options = new CosmosItemRequestOptions();
+        return questions.deleteItem(id, key, options);
     }
 
-    public CosmosItemResponse<Object> delHouse(HouseDAO h) {
+    public CosmosItemResponse<Object> delQuestion(QuestionDAO r) {
         init();
-        return house.deleteItem(h, new CosmosItemRequestOptions());
+        CosmosItemRequestOptions options = new CosmosItemRequestOptions();
+        return questions.deleteItem(r, options);
     }
 
-    public CosmosItemResponse<HouseDAO> putHouse(HouseDAO h) {
+    public CosmosItemResponse<QuestionDAO> putQuestion(QuestionDAO r) {
         init();
-        return house.createItem(h);
+        return questions.createItem(r);
     }
 
-    public CosmosItemResponse<HouseDAO> updateHouse(String id, HouseDAO h) {
+    public CosmosItemResponse<QuestionDAO> updateQuestion(String id, QuestionDAO r) {
         init();
         PartitionKey key = new PartitionKey(id);
-        return house.replaceItem(h, id, key, new CosmosItemRequestOptions());
+        return questions.replaceItem(r, id, key, new CosmosItemRequestOptions());
     }
 
-    public CosmosPagedIterable<HouseDAO> getHouseByLocation(String location) {
+    public CosmosPagedIterable<QuestionDAO> getQuestionById(String id) {
         init();
-        return house.queryItems("SELECT * FROM houses WHERE houses.location=\"" + location + "\"",
+        return questions.queryItems("SELECT * FROM questions WHERE questions.id=\"" + id + "\"",
                 new CosmosQueryRequestOptions(),
-                HouseDAO.class);
+                QuestionDAO.class);
     }
 
-    public CosmosPagedIterable<HouseDAO> getHouseById(String id) {
+    public CosmosPagedIterable<QuestionDAO> getQuestions() {
         init();
-        return house.queryItems("SELECT * FROM houses WHERE houses.id=\"" + id + "\"",
-                new CosmosQueryRequestOptions(),
-                HouseDAO.class);
-    }
-
-    public CosmosPagedIterable<HouseDAO> getHouses() {
-        init();
-        return house.queryItems("SELECT * FROM houses ", new CosmosQueryRequestOptions(), HouseDAO.class);
+        return questions.queryItems("SELECT * FROM questions ", new CosmosQueryRequestOptions(), QuestionDAO.class);
     }
 
     public void close() {

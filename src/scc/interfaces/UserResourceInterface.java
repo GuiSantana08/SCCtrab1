@@ -7,6 +7,7 @@ import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import scc.utils.User;
 import scc.utils.UserDAO;
 
@@ -14,15 +15,15 @@ public interface UserResourceInterface {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public String createUser(User user);
+    public Response createUser(User user);
 
     @DELETE
-    public void deleteUser(@QueryParam("userId") String userId);
+    public Response deleteUser(@QueryParam("userId") String userId);
 
     @PATCH
     @Consumes(MediaType.APPLICATION_JSON)
-    public String updateUser(UserDAO user, @QueryParam("userId") String userId);
+    public Response updateUser(UserDAO user, @QueryParam("userId") String userId);
 
     @GET
-    public void listHouses(@QueryParam("userId") String userId);
+    public Response listHouses(@QueryParam("userId") String userId);
 }
