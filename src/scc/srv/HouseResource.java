@@ -13,6 +13,7 @@ import scc.db.HouseDBLayer;
 import scc.interfaces.HouseResourceInterface;
 import scc.utils.House;
 import scc.utils.HouseDAO;
+import scc.utils.UserDAO;
 
 public class HouseResource implements HouseResourceInterface {
 
@@ -26,7 +27,10 @@ public class HouseResource implements HouseResourceInterface {
                 HouseDAO hDAO = new HouseDAO(house);
                 CosmosItemResponse<HouseDAO> h = houseDb.putHouse(hDAO);
                 jedis.set(hDAO.getId(), mapper.writeValueAsString(hDAO));
-                // TODO: should update the user to insert houseID into array of houseIDs
+                UserResource userR = new UserResource();
+                // TODO: Decide if house Id is already inside HouseIds list in user or is
+                // inserted now
+                userR.updateUser(new UserDAO(house.getOwner()), house.getOwner().getId());
                 return Response.ok(h).build();
             }
         } catch (CosmosException c) {
