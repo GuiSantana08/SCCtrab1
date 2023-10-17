@@ -7,16 +7,16 @@ public class House {
     private String location;
     private String description;
     private String photoId;
-    // TODO: should have an associated user, the owner
+    private User owner;
 
-    public House(String id, String name, String location, String description, String photoId) {
+    public House(String id, String name, String location, String description, String photoId, User owner) {
         super();
         this.id = id;
         this.name = name;
         this.location = location;
         this.description = description;
         this.photoId = photoId;
-
+        this.owner = owner;
     }
     public House() {
         super();
@@ -60,6 +60,14 @@ public class House {
 
     public void setPhotoId(String photoId) {
         this.photoId = photoId;
+    }
+
+    public User getOwner() {
+        return this.owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
     @Override

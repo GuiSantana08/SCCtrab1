@@ -8,19 +8,21 @@ public class HouseDAO {
     private String location;
     private String description;
     private String photoId;
+    private User owner;
     // TODO: make the availability system
 
     public HouseDAO(House h) {
-        this(h.getId(), h.getName(), h.getLocation(), h.getDescription(), h.getPhotoId());
+        this(h.getId(), h.getName(), h.getLocation(), h.getDescription(), h.getPhotoId(), h.getOwner());
     }
 
-    public HouseDAO(String id, String name, String location, String description, String photoId) {
+    public HouseDAO(String id, String name, String location, String description, String photoId, User ownerId) {
         super();
         this.id = id;
         this.name = name;
         this.location = location;
         this.description = description;
         this.photoId = photoId;
+        this.owner = ownerId;
     }
 
     public String get_rid() {
@@ -40,7 +42,7 @@ public class HouseDAO {
     }
 
     public String getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(String id) {
@@ -77,6 +79,14 @@ public class HouseDAO {
 
     public void setPhotoId(String photoId) {
         this.photoId = photoId;
+    }
+
+    public User getOwner() {
+        return this.owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
     @Override
