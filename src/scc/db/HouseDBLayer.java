@@ -68,13 +68,15 @@ public class HouseDBLayer {
 
     public CosmosItemResponse<HouseDAO> putHouse(HouseDAO h) {
         init();
+
         return house.createItem(h);
     }
 
     public CosmosItemResponse<HouseDAO> updateHouse(String id, HouseDAO h) {
         init();
         PartitionKey key = new PartitionKey(id);
-        return house.replaceItem(h, id, key, new CosmosItemRequestOptions());
+
+        return house.replaceItem(h, h.getId(), key, new CosmosItemRequestOptions());
     }
 
     public CosmosPagedIterable<HouseDAO> getHouseByLocation(String location) {

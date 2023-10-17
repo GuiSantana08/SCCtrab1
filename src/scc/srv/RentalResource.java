@@ -10,6 +10,7 @@ import redis.clients.jedis.Jedis;
 import scc.cache.RedisCache;
 import scc.db.RentalDBLayer;
 import scc.interfaces.RentalResourceInterface;
+import scc.utils.HouseDAO;
 import scc.utils.Rental;
 import scc.utils.RentalDAO;
 
@@ -22,12 +23,9 @@ public class RentalResource implements RentalResourceInterface {
     @Override
     public Response createRental(Rental rental) {
         try {
-            try (Jedis jedis = RedisCache.getCachePool().getResource()) {
-                RentalDAO rDAO = new RentalDAO(rental);
-                CosmosItemResponse<RentalDAO> r = rentalDB.putRental(rDAO);
-                jedis.set(rDAO.getId(), mapper.writeValueAsString(rDAO));
-                return Response.ok(r).build();
-            }
+            RentalDAO rDAO = new RentalDAO(rental);
+            CosmosItemResponse<RentalDAO> h = rentalDB.putRental(rDAO);
+            return Response.ok().build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -35,14 +33,15 @@ public class RentalResource implements RentalResourceInterface {
         }
     }
 
+
     @Override
-    public Response updateRental(RentalDAO rental, String oldId) {
+    public Response updateRental(Rental rental) {
         try {
-            try (Jedis jedis = RedisCache.getCachePool().getResource()) {
-                CosmosItemResponse<RentalDAO> r = rentalDB.updateRental(oldId, rental);
-                jedis.set(rental.getId(), mapper.writeValueAsString(rental));
-                return Response.ok(r).build();
-            }
+                RentalDAO rDAO = new RentalDAO(rental);
+                CosmosItemResponse<RentalDAO> r = rentalDB.updateRental(rDAO);
+                //jedis.set(rental.getId(), mapper.writeValueAsString(rental));
+                return Response.ok().build();
+
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {

@@ -6,6 +6,7 @@ import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
+import scc.utils.Rental;
 import scc.utils.RentalDAO;
 
 public class RentalDBLayer {
@@ -69,10 +70,10 @@ public class RentalDBLayer {
         return rentals.createItem(r);
     }
 
-    public CosmosItemResponse<RentalDAO> updateRental(String id, RentalDAO r) {
+    public CosmosItemResponse<RentalDAO> updateRental(RentalDAO r) {
         init();
-        PartitionKey key = new PartitionKey(id);
-        return rentals.replaceItem(r, id, key, new CosmosItemRequestOptions());
+        PartitionKey key = new PartitionKey(r.getId());
+        return rentals.replaceItem(r, r.getId(), key, new CosmosItemRequestOptions());
     }
 
     public CosmosPagedIterable<RentalDAO> getRentalById(String id) {

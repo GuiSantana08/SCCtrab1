@@ -12,6 +12,7 @@ public class MainApplication extends Application {
 	private Set<Class<?>> resources = new HashSet<Class<?>>();
 
 	public MainApplication() {
+		resources.add(ControlResource.class);
 		resources.add(UserResource.class);
 		resources.add(HouseResource.class);
 		resources.add(RentalResource.class);

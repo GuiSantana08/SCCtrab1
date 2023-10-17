@@ -1,23 +1,30 @@
 package scc.interfaces;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import scc.utils.Rental;
 import scc.utils.RentalDAO;
 
 public interface RentalResourceInterface {
 
+
+    @Path("/create")
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response createRental(Rental rental);
 
+    @Path("/update")
     @PUT
-    public Response updateRental(RentalDAO rental, String oldId);
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateRental(Rental rental);
 
+    @Path("/getInfo")
     @GET
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response getRentalInfo(String id);
 
+    @Path("/listDiscontedRentals")
     @GET
     public void listDiscountedRentals();
 }

@@ -1,28 +1,35 @@
 package scc.interfaces;
 
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import scc.utils.House;
 import scc.utils.HouseDAO;
 
 public interface HouseResourceInterface {
-
+    @Path("/create")
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response createHouse(House house);
 
-    @DELETE
-    public Response deleteHouse(String id);
 
+    @Path("/delete")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response deleteHouse(String json);
+
+    @Path("/update")
     @PUT
-    public Response updateHouse(HouseDAO house, String oldId);
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateHouse(House house);
 
+    @Path("/getHouseByLocation")
     @GET
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response listAvailableHouses(@QueryParam("location") String location);
 
+    @Path("/searchAvailableHouses")
     @GET
-    public void searchAvailableHouses(@QueryParam("location") String location, @QueryParam("period") String period);
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void searchAvailableHouses(@QueryParam("period") String period);
 }

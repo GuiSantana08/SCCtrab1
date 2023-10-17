@@ -71,10 +71,10 @@ public class UserDBLayer {
         return users.createItem(user);
     }
 
-    public CosmosItemResponse<UserDAO> updateUser(String id, UserDAO user) {
+    public CosmosItemResponse<UserDAO> updateUser(UserDAO user) {
         init();
-        PartitionKey key = new PartitionKey(id);
-        return users.replaceItem(user, id, key, new CosmosItemRequestOptions());
+        PartitionKey key = new PartitionKey(user.getId());
+        return users.replaceItem(user, user.getId(), key, new CosmosItemRequestOptions());
     }
 
     public CosmosPagedIterable<UserDAO> getUserById(String id) {

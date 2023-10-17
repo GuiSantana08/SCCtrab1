@@ -14,6 +14,7 @@ import redis.clients.jedis.Jedis;
 import scc.cache.RedisCache;
 import scc.db.QuestionDBLayer;
 import scc.interfaces.QuestionResourceInterface;
+import scc.utils.HouseDAO;
 import scc.utils.Question;
 import scc.utils.QuestionDAO;
 
@@ -26,12 +27,10 @@ public class QuestionResource implements QuestionResourceInterface {
     @Override
     public Response createQuestion(Question question) {
         try {
-            try (Jedis jedis = RedisCache.getCachePool().getResource()) {
-                QuestionDAO qDAO = new QuestionDAO(question);
-                CosmosItemResponse<QuestionDAO> q = questionDb.putQuestion(qDAO);
-                jedis.set(qDAO.getId(), mapper.writeValueAsString(q));
-                return Response.ok(q).build();
-            }
+            QuestionDAO qDAo = new QuestionDAO(question);
+            CosmosItemResponse<QuestionDAO> h = questionDb.putQuestion(qDAo);
+            return Response.ok().build();
+
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -43,6 +42,7 @@ public class QuestionResource implements QuestionResourceInterface {
     public Response listQuestions() {
         List<QuestionDAO> questions = new ArrayList<>();
         try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+
             CosmosPagedIterable<QuestionDAO> u = questionDb.getQuestions();
 
             while (u.iterator().hasNext()) {

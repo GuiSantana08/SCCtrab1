@@ -18,6 +18,9 @@ public class House {
         this.photoId = photoId;
 
     }
+    public House() {
+        super();
+    }
 
     public String getId() {
         return this.id;
