@@ -1,5 +1,6 @@
 package scc.interfaces;
 
+import com.azure.core.annotation.Get;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -17,6 +18,12 @@ public interface HouseResourceInterface {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response deleteHouse(String json);
+
+    @Path("/get")
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getHouse(@QueryParam("id") String id);
 
     @Path("/update")
     @PUT

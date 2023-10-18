@@ -98,6 +98,8 @@ public class HouseDBLayer {
         return house.queryItems("SELECT * FROM houses ", new CosmosQueryRequestOptions(), HouseDAO.class);
     }
 
+
+
     public void close() {
         client.close();
     }
