@@ -1,6 +1,8 @@
 package scc.utils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Represents a User, as returned to the clients
@@ -14,7 +16,7 @@ public class User {
     private String name;
     private String pwd;
     private String photoId;
-    private String[] houseIds;
+    private List<String> houseIds;
 
     public User(String id, String name, String pwd, String photoId) {
         super();
@@ -22,6 +24,7 @@ public class User {
         this.name = name;
         this.pwd = pwd;
         this.photoId = photoId;
+        houseIds = new ArrayList<String>();
     }
     public User(){
         super();
@@ -59,18 +62,18 @@ public class User {
         this.photoId = photoId;
     }
 
-    public String[] getHouseIds() {
-        return houseIds == null ? new String[0] : houseIds;
+    public List<String> getHouseIds() {
+        return houseIds;
     }
 
-    public void setHouseIds(String[] houseIds) {
+    public void setHouseIds(List<String> houseIds) {
         this.houseIds = houseIds;
     }
 
     @Override
     public String toString() {
         return "User [id=" + id + ", name=" + name + ", pwd=" + pwd + ", photoId=" + photoId + ", houseIds="
-                + Arrays.toString(houseIds) + "]";
+                + houseIds.toString() + "]";
     }
 
 }

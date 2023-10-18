@@ -61,6 +61,13 @@ public class UserDBLayer {
         return users.deleteItem(id, key, new CosmosItemRequestOptions());
     }
 
+    //update user by id
+    public CosmosItemResponse<UserDAO> updateUserById(String id, UserDAO user) {
+        init();
+        PartitionKey key = new PartitionKey(id);
+        return users.replaceItem(user, id, key, new CosmosItemRequestOptions());
+    }
+
     public CosmosItemResponse<Object> delUser(UserDAO user) {
         init();
         return users.deleteItem(user, new CosmosItemRequestOptions());

@@ -1,6 +1,7 @@
 package scc.utils;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Represents a User, as stored in the database
@@ -12,7 +13,7 @@ public class UserDAO {
     private String name;
     private String pwd;
     private String photoId;
-    private String[] houseIds;
+    private List<String> houseIds;
 
     public UserDAO() {
     }
@@ -21,7 +22,7 @@ public class UserDAO {
         this(u.getId(), u.getName(), u.getPwd(), u.getPhotoId(), u.getHouseIds());
     }
 
-    public UserDAO(String id, String name, String pwd, String photoId, String[] houseIds) {
+    public UserDAO(String id, String name, String pwd, String photoId, List<String> houseIds) {
         super();
         this.id = id;
         this.name = name;
@@ -78,11 +79,11 @@ public class UserDAO {
         this.photoId = photoId;
     }
 
-    public String[] getHouseIds() {
-        return houseIds == null ? new String[0] : houseIds;
+    public List<String> getHouseIds() {
+        return houseIds;
     }
 
-    public void setHouseIds(String[] houseIds) {
+    public void setHouseIds(List<String> houseIds) {
         this.houseIds = houseIds;
     }
 
@@ -93,7 +94,7 @@ public class UserDAO {
     @Override
     public String toString() {
         return "UserDAO [_rid=" + _rid + ", _ts=" + _ts + ", id=" + id + ", name=" + name + ", pwd=" + pwd
-                + ", photoId=" + photoId + ", houseIds=" + Arrays.toString(houseIds) + "]";
+                + ", photoId=" + photoId + ", houseIds=" + houseIds.toString() + "]";
     }
 
 }

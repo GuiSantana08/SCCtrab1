@@ -13,14 +13,21 @@ import redis.clients.jedis.Jedis;
 
 import scc.cache.RedisCache;
 import scc.db.HouseDBLayer;
+import scc.db.UserDBLayer;
 import scc.interfaces.HouseResourceInterface;
 import scc.utils.House;
 import scc.utils.HouseDAO;
+import scc.utils.UserDAO;
+
 @Path("/house")
 public class HouseResource implements HouseResourceInterface {
 
     ObjectMapper mapper = new ObjectMapper();
     HouseDBLayer houseDb = HouseDBLayer.getInstance();
+
+    UserDBLayer userDb = UserDBLayer.getInstance();
+
+
 
     @Override
     public Response createHouse(House house) {
@@ -28,8 +35,21 @@ public class HouseResource implements HouseResourceInterface {
                 HouseDAO hDAO = new HouseDAO(house);
                 CosmosItemResponse<HouseDAO> h = houseDb.putHouse(hDAO);
                 //jedis.set(hDAO.getId(), mapper.writeValueAsString(hDAO));
+                   CosmosPagedIterable userCosmos = userDb.getUserById(house.getUserId());
+
+                   //get userDao
+                   UserDAO userDAO = (UserDAO) userCosmos.iterator().next();
+                   //add house id to user houseIds
+                   userDAO.getHouseIds().add(house.getId());
+                   //update user
+                   userDb.updateUser(userDAO);
+
+
+                //TODO update user with the house id
+
+
                 // TODO: should update the user to insert houseID into array of houseIDs
-                return Response.ok().build();
+                return Response.ok("House created").build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -43,9 +63,22 @@ public class HouseResource implements HouseResourceInterface {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(json);
             String id = jsonNode.get("id").asText();
+
             houseDb.delHouseById(id);
             //jedis.del(id);
             return Response.ok().build();
+        } catch (CosmosException c) {
+            return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
+        } catch (Exception e) {
+            return Response.status(500).entity(e.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response getHouse(String id) {
+        try {
+            var h =houseDb.getHouseById(id);
+            return  Response.ok(h.iterator().next().getId()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -61,7 +94,7 @@ public class HouseResource implements HouseResourceInterface {
                 CosmosItemResponse<HouseDAO> h = houseDb.updateHouse(house.getId(), hDAO);
 
                 //jedis.set(house.getId(), mapper.writeValueAsString(house));
-                return Response.ok().build();
+                return Response.ok(h.getItem().toString()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -86,25 +119,6 @@ public class HouseResource implements HouseResourceInterface {
         throw new UnsupportedOperationException("Unimplemented method 'searchAvailableHouses'");
     }
 
-    public Response getHouse(String id) {
-        try {
-            try (Jedis jedis = RedisCache.getCachePool().getResource()) {
-                String res = jedis.get(id);
-                if (res == null) {
-                    CosmosPagedIterable<HouseDAO> house = houseDb.getHouseById(id);
-                    if (house.iterator().hasNext()) {
-                        return Response.ok(house.iterator().next()).build();
-                    }
-                }
 
-                HouseDAO h = mapper.readValue(res, HouseDAO.class);
-                return Response.ok(h).build();
-            }
-        } catch (CosmosException c) {
-            return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
-        } catch (Exception e) {
-            return Response.status(500).entity(e.getMessage()).build();
-        }
-    }
 
 }

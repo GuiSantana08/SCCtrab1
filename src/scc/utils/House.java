@@ -7,16 +7,16 @@ public class House {
     private String location;
     private String description;
     private String photoId;
-    private User owner;
+    private String userId;
 
-    public House(String id, String name, String location, String description, String photoId, User owner) {
+    public House(String id, String name, String location, String description, String photoId, String userId) {
         super();
         this.id = id;
         this.name = name;
         this.location = location;
         this.description = description;
         this.photoId = photoId;
-        this.owner = owner;
+        this.userId = userId;
     }
     public House() {
         super();
@@ -62,12 +62,12 @@ public class House {
         this.photoId = photoId;
     }
 
-    public User getOwner() {
-        return this.owner;
+    public String getUserId() {
+        return this.userId;
     }
 
-    public void setOwner(User owner) {
-        this.owner = owner;
+    public void setUserID(String userId) {
+        this.userId = userId;
     }
 
     @Override
