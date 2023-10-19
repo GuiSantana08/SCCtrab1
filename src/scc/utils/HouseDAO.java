@@ -1,5 +1,7 @@
 package scc.utils;
 
+import java.util.Map;
+
 public class HouseDAO {
     private String _rid;
     private String _ts;
@@ -9,16 +11,22 @@ public class HouseDAO {
     private String description;
     private String photoId;
     private String userId;
+    private int basePrice;
+    private Map<String, Accessibility> available;
     // TODO: make the availability system
 
     public HouseDAO() {
     }
 
     public HouseDAO(House h) {
-        this(h.getId(), h.getName(), h.getLocation(), h.getDescription(), h.getPhotoId(), h.getUserId());
+        this(h.getId(), h.getName(), h.getLocation(), h.getDescription(), h.getPhotoId(), h.getUserId(),
+                h.getBasePrice(),
+                h.getAvailable());
     }
 
-    public HouseDAO(String id, String name, String location, String description, String photoId, String userId) {
+    public HouseDAO(String id, String name, String location, String description, String photoId, String userId,
+            int basePrice,
+            Map<String, Accessibility> available) {
         super();
         this.id = id;
         this.name = name;
@@ -26,6 +34,8 @@ public class HouseDAO {
         this.description = description;
         this.photoId = photoId;
         this.userId = userId;
+        this.basePrice = basePrice;
+        this.available = available;
     }
 
     public String get_rid() {
@@ -90,6 +100,22 @@ public class HouseDAO {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public int getBasePrice() {
+        return this.basePrice;
+    }
+
+    public void setBasePrice(int basePrice) {
+        this.basePrice = basePrice;
+    }
+
+    public Map<String, Accessibility> getAvailable() {
+        return this.available;
+    }
+
+    public void setAvailable(Map<String, Accessibility> available) {
+        this.available = available;
     }
 
     @Override

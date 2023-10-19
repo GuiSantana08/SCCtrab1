@@ -19,7 +19,10 @@ import scc.utils.House;
 import scc.utils.HouseDAO;
 import scc.utils.UserDAO;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 @Path("/house")
@@ -30,23 +33,21 @@ public class HouseResource implements HouseResourceInterface {
 
     UserDBLayer userDb = UserDBLayer.getInstance();
 
-
-
     @Override
     public Response createHouse(House house) {
         try {
             CosmosPagedIterable userCosmos = userDb.getUserById(house.getUserId());
-            if(!userCosmos.iterator().hasNext())
+            if (!userCosmos.iterator().hasNext())
                 return Response.status(404).entity("User not found").build();
             HouseDAO hDAO = new HouseDAO(house);
             CosmosItemResponse<HouseDAO> h = houseDb.putHouse(hDAO);
-            //jedis.set(hDAO.getId(), mapper.writeValueAsString(hDAO));
+            // jedis.set(hDAO.getId(), mapper.writeValueAsString(hDAO));
 
-            //get userDao
+            // get userDao
             UserDAO userDAO = (UserDAO) userCosmos.iterator().next();
-            //add house id to user houseIds
+            // add house id to user houseIds
             userDAO.getHouseIds().add(house.getId());
-            //update user
+            // update user
 
             userDb.updateUser(userDAO);
 
@@ -67,8 +68,8 @@ public class HouseResource implements HouseResourceInterface {
             String id = jsonNode.get("id").asText();
 
             houseDb.delHouseById(id);
-            //TODO change the id to "Deleted User”
-            //jedis.del(id);
+            // TODO change the id to "Deleted User”
+            // jedis.del(id);
             return Response.ok().build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
@@ -80,8 +81,8 @@ public class HouseResource implements HouseResourceInterface {
     @Override
     public Response getHouse(String id) {
         try {
-            var h =houseDb.getHouseById(id);
-            return  Response.ok(h.iterator().next().getId()).build();
+            var h = houseDb.getHouseById(id);
+            return Response.ok(h.iterator().next().getId()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -93,11 +94,11 @@ public class HouseResource implements HouseResourceInterface {
     public Response updateHouse(House house) {
         try {
 
-                HouseDAO hDAO = new HouseDAO(house);
-                CosmosItemResponse<HouseDAO> h = houseDb.updateHouse(house.getId(), hDAO);
+            HouseDAO hDAO = new HouseDAO(house);
+            CosmosItemResponse<HouseDAO> h = houseDb.updateHouse(house.getId(), hDAO);
 
-                //jedis.set(house.getId(), mapper.writeValueAsString(house));
-                return Response.ok(h.getItem().toString()).build();
+            // jedis.set(house.getId(), mapper.writeValueAsString(house));
+            return Response.ok(h.getItem().toString()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -107,14 +108,17 @@ public class HouseResource implements HouseResourceInterface {
 
     @Override
     public Response listAvailableHouses(String location) {
-        List<HouseDAO> housesLo = new ArrayList<>();
+        List<HouseDAO> housesList = new ArrayList<>();
         try {
             CosmosPagedIterable<HouseDAO> houseCosmos = houseDb.getHouseByLocation(location);
-            for(HouseDAO h : houseCosmos) {
-                housesLo.add(h);
-            }
-            return Response.ok(housesLo.toString()).build();
+            String currentMonth = LocalDate.now().getMonth().toString().toLowerCase();
 
+            for (HouseDAO h : houseCosmos) {
+                if (!h.getAvailable().get(currentMonth).isOcupied())
+                    housesList.add(h);
+            }
+
+            return Response.ok(housesList.toString()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -123,11 +127,32 @@ public class HouseResource implements HouseResourceInterface {
     }
 
     @Override
-    public void searchAvailableHouses(String period) {
-        //calculate the current date
-        throw new UnsupportedOperationException("Unimplemented method 'searchAvailableHouses'");
+    public Response searchAvailableHouses(String period, String location) {
+        List<HouseDAO> housesList = new ArrayList<>();
+        try {
+            CosmosPagedIterable<HouseDAO> houseCosmos = houseDb.getHouseByLocation(location);
+            String[] months = period.split(":");
+            Month startMonth = Month.valueOf(months[0].toUpperCase());
+            Month endMonth = Month.valueOf(months[1].toUpperCase());
+
+            for (HouseDAO h : houseCosmos) {
+                boolean isOcupied = false;
+                while (!startMonth.equals(endMonth)) {
+                    if (h.getAvailable().get(startMonth.toString().toLowerCase()).isOcupied())
+                        isOcupied = true;
+
+                    startMonth = startMonth.plus(1);
+                }
+                if (!isOcupied)
+                    housesList.add(h);
+            }
+
+            return Response.ok(housesList.toString()).build();
+        } catch (CosmosException c) {
+            return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
+        } catch (Exception e) {
+            return Response.status(500).entity(e.getMessage()).build();
+        }
     }
-
-
 
 }

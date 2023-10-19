@@ -13,7 +13,6 @@ public interface HouseResourceInterface {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createHouse(House house);
 
-
     @Path("/delete")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -38,5 +37,5 @@ public interface HouseResourceInterface {
     @Path("/searchAvailableHouses")
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
-    public void searchAvailableHouses(@QueryParam("period") String period);
+    public Response searchAvailableHouses(@QueryParam("period") String period, @QueryParam("location") String location);
 }

@@ -33,14 +33,13 @@ public class RentalResource implements RentalResourceInterface {
         }
     }
 
-
     @Override
     public Response updateRental(Rental rental) {
         try {
-                RentalDAO rDAO = new RentalDAO(rental);
-                CosmosItemResponse<RentalDAO> r = rentalDB.updateRental(rDAO);
-                //jedis.set(rental.getId(), mapper.writeValueAsString(rental));
-                return Response.ok().build();
+            RentalDAO rDAO = new RentalDAO(rental);
+            CosmosItemResponse<RentalDAO> r = rentalDB.updateRental(rDAO);
+            // jedis.set(rental.getId(), mapper.writeValueAsString(rental));
+            return Response.ok().build();
 
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
