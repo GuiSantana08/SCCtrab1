@@ -32,24 +32,23 @@ public class HouseResource implements HouseResourceInterface {
     @Override
     public Response createHouse(House house) {
         try {
-                HouseDAO hDAO = new HouseDAO(house);
-                CosmosItemResponse<HouseDAO> h = houseDb.putHouse(hDAO);
-                //jedis.set(hDAO.getId(), mapper.writeValueAsString(hDAO));
-                   CosmosPagedIterable userCosmos = userDb.getUserById(house.getUserId());
+            CosmosPagedIterable userCosmos = userDb.getUserById(house.getUserId());
+            if(!userCosmos.iterator().hasNext())
+                return Response.status(404).entity("User not found").build();
+            HouseDAO hDAO = new HouseDAO(house);
+            CosmosItemResponse<HouseDAO> h = houseDb.putHouse(hDAO);
+            //jedis.set(hDAO.getId(), mapper.writeValueAsString(hDAO));
 
-                   //get userDao
-                   UserDAO userDAO = (UserDAO) userCosmos.iterator().next();
-                   //add house id to user houseIds
-                   userDAO.getHouseIds().add(house.getId());
-                   //update user
-                   userDb.updateUser(userDAO);
+            //get userDao
+            UserDAO userDAO = (UserDAO) userCosmos.iterator().next();
+            //add house id to user houseIds
+            userDAO.getHouseIds().add(house.getId());
+            //update user
 
+            userDb.updateUser(userDAO);
 
-                //TODO update user with the house id
+            return Response.ok(house.toString()).build();
 
-
-                // TODO: should update the user to insert houseID into array of houseIDs
-                return Response.ok("House created").build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -65,6 +64,7 @@ public class HouseResource implements HouseResourceInterface {
             String id = jsonNode.get("id").asText();
 
             houseDb.delHouseById(id);
+            //TODO change the id to "Deleted User”
             //jedis.del(id);
             return Response.ok().build();
         } catch (CosmosException c) {

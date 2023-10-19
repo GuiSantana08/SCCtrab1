@@ -18,13 +18,13 @@ public class User {
     private String photoId;
     private List<String> houseIds;
 
-    public User(String id, String name, String pwd, String photoId) {
+    public User(String id, String name, String pwd, String photoId, List<String> houseIds) {
         super();
         this.id = id;
         this.name = name;
         this.pwd = pwd;
         this.photoId = photoId;
-        houseIds = new ArrayList<String>();
+        this.houseIds = houseIds;
     }
     public User(){
         super();

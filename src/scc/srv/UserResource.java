@@ -28,10 +28,10 @@ public class UserResource implements UserResourceInterface {
     @Override
     public Response createUser(User us) {
         try {
-                UserDAO user = new UserDAO(us);
-                CosmosItemResponse<UserDAO> u = userDb.putUser(user);
-                //jedis.set(user.getId(), mapper.writeValueAsString(user));
-                return Response.ok().build();
+            UserDAO user = new UserDAO(us);
+            CosmosItemResponse<UserDAO> u = userDb.putUser(user);
+            //jedis.set(user.getId(), mapper.writeValueAsString(user));
+            return Response.ok(us.toString()).build();
 
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
@@ -47,6 +47,8 @@ public class UserResource implements UserResourceInterface {
             JsonNode jsonNode = objectMapper.readTree(json);
             String id = jsonNode.get("id").asText();
             userDb.delUserById(id);
+            //TODO: change the owner id to "
+
             return Response.ok().build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
