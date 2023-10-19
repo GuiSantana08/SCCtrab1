@@ -13,8 +13,10 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
 import redis.clients.jedis.Jedis;
 import scc.cache.RedisCache;
+import scc.db.HouseDBLayer;
 import scc.db.UserDBLayer;
 import scc.interfaces.UserResourceInterface;
+import scc.utils.Constants;
 import scc.utils.User;
 import scc.utils.UserDAO;
 import scc.utils.HouseDAO;
@@ -24,6 +26,8 @@ public class UserResource implements UserResourceInterface {
 
     ObjectMapper mapper = new ObjectMapper();
     UserDBLayer userDb = UserDBLayer.getInstance();
+    HouseDBLayer houseDb = HouseDBLayer.getInstance();
+
 
     @Override
     public Response createUser(User us) {
@@ -46,9 +50,21 @@ public class UserResource implements UserResourceInterface {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(json);
             String id = jsonNode.get("id").asText();
-            userDb.delUserById(id);
-            //TODO: change the owner id to "
+            CosmosPagedIterable<UserDAO> userIt = userDb.getUserById(id) ;
+            if(!userIt.iterator().hasNext())
+                return Response.status(404).entity("User not found").build();
+            if (userIt.iterator().hasNext()) {
+                for (String hId : userIt.iterator().next().getHouseIds()) {
+                    CosmosPagedIterable<HouseDAO> houseCosmos = houseDb.getHouseById(hId);
+                    if (houseCosmos.iterator().hasNext()) {
+                        var upHouse = houseCosmos.iterator().next();
+                        upHouse.setUserId(Constants.deletedUser.getString());
+                        houseDb.updateHouse(upHouse.getId(),upHouse);
 
+                    }
+                }
+            }
+            userDb.delUserById(id);
             return Response.ok().build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
@@ -75,31 +91,23 @@ public class UserResource implements UserResourceInterface {
     @Override
     public Response listHouses(String id) {
         List<HouseDAO> userHouses = new ArrayList<>();
-        try (Jedis jedis = RedisCache.getCachePool().getResource()) {
-            String res = jedis.get(id);
-            if (res == null) {
-                CosmosPagedIterable<UserDAO> u = userDb.getUserById(id);
-
-                if (u.iterator().hasNext()) {
-                    for (String hId : u.iterator().next().getHouseIds()) {
-                        HouseResource hR = new HouseResource();
-                        userHouses.add(hR.getHouse(hId).readEntity(HouseDAO.class));
+        try{
+            CosmosPagedIterable<UserDAO> userCosmos = userDb.getUserById(id);
+            if (userCosmos.iterator().hasNext()) {
+                for (String hId : userCosmos.iterator().next().getHouseIds()) {
+                    CosmosPagedIterable<HouseDAO> houseCosmos = houseDb.getHouseById(hId);
+                    if (houseCosmos.iterator().hasNext()) {
+                        userHouses.add(houseCosmos.iterator().next());
                     }
-                    return Response.ok(userHouses).build();
                 }
             }
-
-            UserDAO u = mapper.readValue(res, UserDAO.class);
-
-            for (String hId : u.getHouseIds()) {
-                HouseResource hR = new HouseResource();
-                userHouses.add(hR.getHouse(hId).readEntity(HouseDAO.class));
-            }
-            return Response.ok(userHouses).build();
+            return Response.ok(userHouses.toString()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
             return Response.status(500).entity(e.getMessage()).build();
         }
+
+
     }
 }

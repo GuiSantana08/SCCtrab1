@@ -11,6 +11,9 @@ public class HouseDAO {
     private String userId;
     // TODO: make the availability system
 
+    public HouseDAO() {
+    }
+
     public HouseDAO(House h) {
         this(h.getId(), h.getName(), h.getLocation(), h.getDescription(), h.getPhotoId(), h.getUserId());
     }
@@ -81,11 +84,11 @@ public class HouseDAO {
         this.photoId = photoId;
     }
 
-    public String getOwner() {
+    public String getUserId() {
         return this.userId;
     }
 
-    public void setOwner(String userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

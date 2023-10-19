@@ -19,6 +19,9 @@ import scc.utils.House;
 import scc.utils.HouseDAO;
 import scc.utils.UserDAO;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Path("/house")
 public class HouseResource implements HouseResourceInterface {
 
@@ -104,8 +107,14 @@ public class HouseResource implements HouseResourceInterface {
 
     @Override
     public Response listAvailableHouses(String location) {
+        List<HouseDAO> housesLo = new ArrayList<>();
         try {
-            return Response.ok().build();
+            CosmosPagedIterable<HouseDAO> houseCosmos = houseDb.getHouseByLocation(location);
+            for(HouseDAO h : houseCosmos) {
+                housesLo.add(h);
+            }
+            return Response.ok(housesLo.toString()).build();
+
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -115,7 +124,7 @@ public class HouseResource implements HouseResourceInterface {
 
     @Override
     public void searchAvailableHouses(String period) {
-        // TODO Auto-generated method stub
+        //calculate the current date
         throw new UnsupportedOperationException("Unimplemented method 'searchAvailableHouses'");
     }
 
