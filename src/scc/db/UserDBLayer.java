@@ -15,9 +15,9 @@ import scc.utils.Constants;
 import scc.utils.UserDAO;
 
 public class UserDBLayer {
-    private static final String CONNECTION_URL = Constants.conURL60182.getString();
-    private static final String DB_KEY = Constants.dbKey60182.getString();
-    private static final String DB_NAME = Constants.scc232460182.getString();
+    private static final String CONNECTION_URL = Constants.camposConst.getDbUrl();
+    private static final String DB_KEY = Constants.camposConst.getDbKey();
+    private static final String DB_NAME = Constants.camposConst.getDbName();
     private static UserDBLayer instance;
 
     public static synchronized UserDBLayer getInstance() {
@@ -61,7 +61,7 @@ public class UserDBLayer {
         return users.deleteItem(id, key, new CosmosItemRequestOptions());
     }
 
-    //update user by id
+    // update user by id
     public CosmosItemResponse<UserDAO> updateUserById(String id, UserDAO user) {
         init();
         PartitionKey key = new PartitionKey(id);

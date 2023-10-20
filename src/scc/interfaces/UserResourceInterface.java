@@ -4,7 +4,6 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import scc.utils.User;
-import scc.utils.UserDAO;
 
 public interface UserResourceInterface {
 
@@ -13,11 +12,9 @@ public interface UserResourceInterface {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createUser(User user);
 
-
     @Path("/delete")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response deleteUser(String json);
+    @DELETE
+    public Response deleteUser(@QueryParam("userId") String userId);
 
     @Path("/update")
     @PUT
@@ -26,6 +23,5 @@ public interface UserResourceInterface {
 
     @Path("/listHouses")
     @GET
-    @Consumes(MediaType.APPLICATION_JSON)
     public Response listHouses(@QueryParam("userId") String userId);
 }

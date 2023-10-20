@@ -27,6 +27,10 @@ public class House {
         this.available = available;
     }
 
+    public House() {
+        super();
+    }
+
     public String getId() {
         return this.id;
     }

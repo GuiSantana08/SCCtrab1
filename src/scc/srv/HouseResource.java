@@ -22,7 +22,6 @@ import scc.utils.UserDAO;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 @Path("/house")
@@ -36,7 +35,7 @@ public class HouseResource implements HouseResourceInterface {
     @Override
     public Response createHouse(House house) {
         try {
-            CosmosPagedIterable userCosmos = userDb.getUserById(house.getUserId());
+            CosmosPagedIterable<UserDAO> userCosmos = userDb.getUserById(house.getUserId());
             if (!userCosmos.iterator().hasNext())
                 return Response.status(404).entity("User not found").build();
             HouseDAO hDAO = new HouseDAO(house);
@@ -51,7 +50,7 @@ public class HouseResource implements HouseResourceInterface {
 
             userDb.updateUser(userDAO);
 
-            return Response.ok(house.toString()).build();
+            return Response.ok(h).build();
 
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
@@ -82,7 +81,7 @@ public class HouseResource implements HouseResourceInterface {
     public Response getHouse(String id) {
         try {
             var h = houseDb.getHouseById(id);
-            return Response.ok(h.iterator().next().getId()).build();
+            return Response.ok(h.iterator().next()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -137,12 +136,12 @@ public class HouseResource implements HouseResourceInterface {
 
             for (HouseDAO h : houseCosmos) {
                 boolean isOcupied = false;
-                while (!startMonth.equals(endMonth)) {
+                do {
                     if (h.getAvailable().get(startMonth.toString().toLowerCase()).isOcupied())
                         isOcupied = true;
 
                     startMonth = startMonth.plus(1);
-                }
+                } while (!startMonth.equals(endMonth));
                 if (!isOcupied)
                     housesList.add(h);
             }

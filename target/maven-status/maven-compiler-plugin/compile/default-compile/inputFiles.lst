@@ -1,27 +1,28 @@
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\db\UserDBLayer.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\utils\HouseDAO.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\srv\MediaResource.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\db\RentalDBLayer.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\interfaces\QuestionResourceInterface.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\srv\HouseResource.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\utils\Hash.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\srv\RentalResource.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\utils\Question.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\cache\RedisCache.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\utils\House.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\utils\RentalDAO.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\utils\Rental.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\utils\User.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\srv\MainApplication.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\interfaces\MediaResourceInterface.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\interfaces\RentalResourceInterface.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\srv\UserResource.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\srv\ControlResource.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\db\QuestionDBLayer.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\interfaces\UserResourceInterface.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\utils\Constants.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\db\HouseDBLayer.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\utils\QuestionDAO.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\interfaces\HouseResourceInterface.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\srv\QuestionResource.java
-C:\Users\guipi\Desktop\SCC\Praticas\SCCtrab1\src\scc\utils\UserDAO.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\db\QuestionDBLayer.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\utils\Accessibility.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\interfaces\RentalResourceInterface.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\db\UserDBLayer.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\db\RentalDBLayer.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\interfaces\QuestionResourceInterface.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\utils\HouseDAO.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\db\HouseDBLayer.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\utils\House.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\srv\HouseResource.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\utils\UserDAO.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\utils\Constants.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\utils\RentalDAO.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\srv\QuestionResource.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\interfaces\MediaResourceInterface.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\srv\MainApplication.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\srv\UserResource.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\srv\ControlResource.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\srv\RentalResource.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\utils\Rental.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\interfaces\HouseResourceInterface.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\utils\QuestionDAO.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\utils\User.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\utils\Question.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\srv\MediaResource.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\utils\Hash.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\interfaces\UserResourceInterface.java
+C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\cache\RedisCache.java

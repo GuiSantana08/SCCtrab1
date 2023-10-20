@@ -2,6 +2,7 @@ scc\db\HouseDBLayer.class
 scc\interfaces\HouseResourceInterface.class
 scc\srv\ControlResource.class
 scc\interfaces\UserResourceInterface.class
+scc\utils\Accessibility.class
 scc\utils\QuestionDAO.class
 scc\db\RentalDBLayer.class
 scc\srv\RentalResource.class

@@ -9,6 +9,10 @@ public class Accessibility {
         this.ocupied = ocupied;
     }
 
+    public Accessibility() {
+        super();
+    }
+
     public int getPrice() {
         return this.price;
     }

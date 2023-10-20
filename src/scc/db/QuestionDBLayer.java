@@ -11,9 +11,9 @@ import scc.utils.QuestionDAO;
 
 public class QuestionDBLayer {
 
-    private static final String CONNECTION_URL = Constants.conURL60182.getString();
-    private static final String DB_KEY = Constants.dbKey60182.getString();
-    private static final String DB_NAME = Constants.scc232460182.getString();
+    private static final String CONNECTION_URL = Constants.camposConst.getDbUrl();
+    private static final String DB_KEY = Constants.camposConst.getDbKey();
+    private static final String DB_NAME = Constants.camposConst.getDbName();
 
     private static QuestionDBLayer instance;
 

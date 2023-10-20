@@ -1,7 +1,5 @@
 package scc.utils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -26,7 +24,8 @@ public class User {
         this.photoId = photoId;
         this.houseIds = houseIds;
     }
-    public User(){
+
+    public User() {
         super();
     }
 

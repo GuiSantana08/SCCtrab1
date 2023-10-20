@@ -5,6 +5,7 @@ import java.util.Set;
 
 import jakarta.ws.rs.core.Application;
 import scc.db.HouseDBLayer;
+import scc.db.QuestionDBLayer;
 import scc.db.UserDBLayer;
 
 public class MainApplication extends Application {
@@ -21,6 +22,7 @@ public class MainApplication extends Application {
 		//TODO: Media Resource is singleton?
 		singletons.add(UserDBLayer.getInstance());
 		singletons.add(HouseDBLayer.getInstance());
+		singletons.add(QuestionDBLayer.getInstance());
 	}
 
 	@Override

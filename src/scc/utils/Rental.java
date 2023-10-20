@@ -15,6 +15,10 @@ public class Rental {
         this.price = price;
     }
 
+    public Rental() {
+        super();
+    }
+
     public String getId() {
         return this.id;
     }

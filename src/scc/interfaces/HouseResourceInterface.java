@@ -1,11 +1,9 @@
 package scc.interfaces;
 
-import com.azure.core.annotation.Get;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import scc.utils.House;
-import scc.utils.HouseDAO;
 
 public interface HouseResourceInterface {
     @Path("/create")
