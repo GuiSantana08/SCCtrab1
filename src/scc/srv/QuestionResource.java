@@ -26,11 +26,12 @@ public class QuestionResource implements QuestionResourceInterface {
     @Override
     // TODO: recebe user sem casa associada, vai buscar pelo id e guarda no DAO
     public Response createQuestion(String id, Question question) {
-        try {
+        try (Jedis jedis = RedisCache.getCachePool().getResource()) {
             QuestionDAO qDAo = new QuestionDAO(question);
-            CosmosItemResponse<QuestionDAO> h = questionDb.putQuestion(qDAo);
-            return Response.ok().build();
+            CosmosItemResponse<QuestionDAO> q = questionDb.putQuestion(qDAo);
+            jedis.set(question.getId(), mapper.writeValueAsString(question));
 
+            return Response.ok(mapper.writeValueAsString(q)).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {

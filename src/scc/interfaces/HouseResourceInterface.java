@@ -12,9 +12,8 @@ public interface HouseResourceInterface {
     public Response createHouse(House house);
 
     @Path("/delete")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response deleteHouse(String json);
+    @DELETE
+    public Response deleteHouse(@QueryParam("id") String id);
 
     @Path("/get")
     @GET

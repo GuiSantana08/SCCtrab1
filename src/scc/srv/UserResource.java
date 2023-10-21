@@ -1,6 +1,7 @@
 package scc.srv;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.azure.cosmos.CosmosException;
@@ -29,13 +30,11 @@ public class UserResource implements UserResourceInterface {
 
     @Override
     public Response createUser(User us) {
-        try {
-            try (Jedis jedis = RedisCache.getCachePool().getResource()) {
-                UserDAO user = new UserDAO(us);
-                CosmosItemResponse<UserDAO> u = userDb.putUser(user);
-                jedis.set(user.getId(), mapper.writeValueAsString(user));
-                return Response.ok(u.getItem()).build();
-            }
+        try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+            UserDAO user = new UserDAO(us);
+            CosmosItemResponse<UserDAO> u = userDb.putUser(user);
+            jedis.set(user.getId(), mapper.writeValueAsString(user));
+            return Response.ok(u.getItem().toString()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -49,12 +48,14 @@ public class UserResource implements UserResourceInterface {
             String userRes = jedis.get(userId);
 
             if (userRes == null) {
-                CosmosPagedIterable<UserDAO> userIt = userDb.getUserById(userId);
+                CosmosPagedIterable<UserDAO> user = userDb.getUserById(userId);
+                Iterator<UserDAO> userIt = user.iterator();
 
-                if (!userIt.iterator().hasNext())
+                if (!userIt.hasNext())
                     return Response.status(404).entity("User not found").build();
+                jedis.set(userIt.next().getId(), mapper.writeValueAsString(userIt.next()));
 
-                for (String hId : userIt.iterator().next().getHouseIds()) {
+                for (String hId : userIt.next().getHouseIds()) {
                     CosmosPagedIterable<HouseDAO> houseCosmos = houseDb.getHouseById(hId);
                     if (houseCosmos.iterator().hasNext()) {
                         var upHouse = houseCosmos.iterator().next();
@@ -80,7 +81,7 @@ public class UserResource implements UserResourceInterface {
 
             jedis.del(userId);
             userDb.delUserById(userId);
-            return Response.ok(userId).entity("CACHED").build();
+            return Response.ok("CACHED " + userId).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -94,7 +95,7 @@ public class UserResource implements UserResourceInterface {
             UserDAO uDAO = new UserDAO(user);
             CosmosItemResponse<UserDAO> u = userDb.updateUser(uDAO);
             jedis.set(user.getId(), mapper.writeValueAsString(user));
-            return Response.ok(u.getItem()).build();
+            return Response.ok(u.getItem().toString()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -111,9 +112,15 @@ public class UserResource implements UserResourceInterface {
             String res = jedis.get(id);
 
             if (res == null) {
-                CosmosPagedIterable<UserDAO> userCosmos = userDb.getUserById(id);
-                if (userCosmos.iterator().hasNext()) {
-                    for (String hId : userCosmos.iterator().next().getHouseIds()) {
+                CosmosPagedIterable<UserDAO> user = userDb.getUserById(id);
+                Iterator<UserDAO> userIt = user.iterator();
+
+                if (!userIt.hasNext())
+                    return Response.status(404).entity("User not found").build();
+                jedis.set(userIt.next().getId(), mapper.writeValueAsString(userIt.next()));
+
+                if (userIt.hasNext()) {
+                    for (String hId : userIt.next().getHouseIds()) {
                         CosmosPagedIterable<HouseDAO> houseCosmos = houseDb.getHouseById(hId);
                         if (houseCosmos.iterator().hasNext()) {
                             userHouses.add(houseCosmos.iterator().next());
@@ -131,7 +138,7 @@ public class UserResource implements UserResourceInterface {
                 }
             }
 
-            return Response.ok(userHouses.toString()).entity("CACHED").build();
+            return Response.ok("CACHED " + userHouses.toString()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {

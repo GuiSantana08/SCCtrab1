@@ -3,11 +3,9 @@ package scc.srv;
 import com.azure.cosmos.CosmosException;
 import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.util.CosmosPagedIterable;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Response;
 import redis.clients.jedis.Jedis;
 
@@ -34,24 +32,30 @@ public class HouseResource implements HouseResourceInterface {
 
     @Override
     public Response createHouse(House house) {
-        try {
-            CosmosPagedIterable<UserDAO> userCosmos = userDb.getUserById(house.getUserId());
-            if (!userCosmos.iterator().hasNext())
-                return Response.status(404).entity("User not found").build();
+        UserDAO userDAO;
+        try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+            String res = jedis.get(house.getUserId());
+
+            if (res == null) {
+                CosmosPagedIterable<UserDAO> userCosmos = userDb.getUserById(house.getUserId());
+                if (!userCosmos.iterator().hasNext())
+                    return Response.status(404).entity("User not found").build();
+
+                userDAO = (UserDAO) userCosmos.iterator().next();
+            } else {
+                userDAO = mapper.readValue(res, UserDAO.class);
+            }
+
             HouseDAO hDAO = new HouseDAO(house);
             CosmosItemResponse<HouseDAO> h = houseDb.putHouse(hDAO);
-            // jedis.set(hDAO.getId(), mapper.writeValueAsString(hDAO));
+            jedis.set(hDAO.getId(), mapper.writeValueAsString(hDAO));
 
-            // get userDao
-            UserDAO userDAO = (UserDAO) userCosmos.iterator().next();
-            // add house id to user houseIds
             userDAO.getHouseIds().add(house.getId());
-            // update user
 
             userDb.updateUser(userDAO);
+            jedis.set(userDAO.getId(), mapper.writeValueAsString(userDAO));
 
-            return Response.ok(h).build();
-
+            return Response.ok(h.getItem().toString()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -60,15 +64,10 @@ public class HouseResource implements HouseResourceInterface {
     }
 
     @Override
-    public Response deleteHouse(String json) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(json);
-            String id = jsonNode.get("id").asText();
-
+    public Response deleteHouse(String id) {
+        try (Jedis jedis = RedisCache.getCachePool().getResource()) {
             houseDb.delHouseById(id);
-            // TODO change the id to "Deleted User”
-            // jedis.del(id);
+            jedis.del(id);
             return Response.ok().build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
@@ -79,9 +78,17 @@ public class HouseResource implements HouseResourceInterface {
 
     @Override
     public Response getHouse(String id) {
-        try {
-            var h = houseDb.getHouseById(id);
-            return Response.ok(h.iterator().next()).build();
+        try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+            String res = jedis.get(id);
+            if (res == null) {
+                var h = houseDb.getHouseById(id);
+                jedis.set(id, mapper.writeValueAsString(h));
+                return Response.ok(h.iterator().next()).build();
+            }
+
+            HouseDAO h = mapper.readValue(res, HouseDAO.class);
+
+            return Response.ok(h).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -91,12 +98,12 @@ public class HouseResource implements HouseResourceInterface {
 
     @Override
     public Response updateHouse(House house) {
-        try {
+        try (Jedis jedis = RedisCache.getCachePool().getResource()) {
 
             HouseDAO hDAO = new HouseDAO(house);
             CosmosItemResponse<HouseDAO> h = houseDb.updateHouse(house.getId(), hDAO);
 
-            // jedis.set(house.getId(), mapper.writeValueAsString(house));
+            jedis.set(house.getId(), mapper.writeValueAsString(house));
             return Response.ok(h.getItem().toString()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
