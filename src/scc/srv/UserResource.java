@@ -1,15 +1,19 @@
 package scc.srv;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CancellationException;
 
 import com.azure.cosmos.CosmosException;
 import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.util.CosmosPagedIterable;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
 import redis.clients.jedis.Jedis;
 import scc.cache.RedisCache;
@@ -20,6 +24,8 @@ import scc.utils.Constants;
 import scc.utils.User;
 import scc.utils.UserDAO;
 import scc.utils.HouseDAO;
+import scc.utils.Login;
+import scc.utils.Session;
 
 @Path("/user")
 public class UserResource implements UserResourceInterface {
@@ -45,43 +51,20 @@ public class UserResource implements UserResourceInterface {
     @Override
     public Response deleteUser(String userId) {
         try (Jedis jedis = RedisCache.getCachePool().getResource()) {
-            String userRes = jedis.get(userId);
 
-            if (userRes == null) {
-                CosmosPagedIterable<UserDAO> user = userDb.getUserById(userId);
-                Iterator<UserDAO> userIt = user.iterator();
-
-                if (!userIt.hasNext())
-                    return Response.status(404).entity("User not found").build();
-                jedis.set(userIt.next().getId(), mapper.writeValueAsString(userIt.next()));
-
-                for (String hId : userIt.next().getHouseIds()) {
-                    CosmosPagedIterable<HouseDAO> houseCosmos = houseDb.getHouseById(hId);
-                    if (houseCosmos.iterator().hasNext()) {
-                        var upHouse = houseCosmos.iterator().next();
-                        upHouse.setUserId(Constants.deletedUser.getDbName());
-                        houseDb.updateHouse(upHouse.getId(), upHouse);
-                    }
-                }
-
-                jedis.del(userId);
-                userDb.delUserById(userId);
-                return Response.ok(userId).build();
-            }
-
-            UserDAO userIt = mapper.readValue(userRes, UserDAO.class);
-            for (String hId : userIt.getHouseIds()) {
-                CosmosPagedIterable<HouseDAO> houseCosmos = houseDb.getHouseById(hId);
+            for (HouseDAO h : houseDb.getHouseByUserId(userId)) {
+                CosmosPagedIterable<HouseDAO> houseCosmos = houseDb.getHouseById(h.getId());
                 if (houseCosmos.iterator().hasNext()) {
-                    var upHouse = houseCosmos.iterator().next();
+                    HouseDAO upHouse = houseCosmos.iterator().next();
                     upHouse.setUserId(Constants.deletedUser.getDbName());
                     houseDb.updateHouse(upHouse.getId(), upHouse);
+                    jedis.set(upHouse.getId(), mapper.writeValueAsString(upHouse));
                 }
             }
 
             jedis.del(userId);
             userDb.delUserById(userId);
-            return Response.ok("CACHED " + userId).build();
+            return Response.ok(userId).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -109,41 +92,61 @@ public class UserResource implements UserResourceInterface {
 
         // TODO maybe should verify if user exists
         try (Jedis jedis = RedisCache.getCachePool().getResource()) {
-            String res = jedis.get(id);
+            CosmosPagedIterable<HouseDAO> houses = houseDb.getHouseByUserId(id);
 
-            if (res == null) {
-                CosmosPagedIterable<UserDAO> user = userDb.getUserById(id);
-                Iterator<UserDAO> userIt = user.iterator();
-
-                if (!userIt.hasNext())
-                    return Response.status(404).entity("User not found").build();
-                jedis.set(userIt.next().getId(), mapper.writeValueAsString(userIt.next()));
-
-                if (userIt.hasNext()) {
-                    for (String hId : userIt.next().getHouseIds()) {
-                        CosmosPagedIterable<HouseDAO> houseCosmos = houseDb.getHouseById(hId);
-                        if (houseCosmos.iterator().hasNext()) {
-                            userHouses.add(houseCosmos.iterator().next());
-                        }
-                    }
-                }
-                return Response.ok(userHouses.toString()).build();
+            for (HouseDAO h : houses) {
+                userHouses.add(h);
             }
 
-            UserDAO u = mapper.readValue(res, UserDAO.class);
-            for (String hId : u.getHouseIds()) {
-                CosmosPagedIterable<HouseDAO> houseCosmos = houseDb.getHouseById(hId);
-                if (houseCosmos.iterator().hasNext()) {
-                    userHouses.add(houseCosmos.iterator().next());
-                }
-            }
-
-            return Response.ok("CACHED " + userHouses.toString()).build();
+            return Response.ok(userHouses.toString()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
             return Response.status(500).entity(e.getMessage()).build();
         }
 
+    }
+
+    // TODO
+    public Response auth(Login user) {
+        boolean pwdOk = false;
+
+        // Check pwd
+
+        if (pwdOk) {
+            String uid = UUID.randomUUID().toString();
+            NewCookie cookie = new NewCookie.Builder("scc:session")
+                    .value(uid)
+                    .path("/")
+                    .comment("sessionid")
+                    .maxAge(3600)
+                    .secure(false)
+                    .httpOnly(true)
+                    .build();
+
+            RedisCache.putSession(new Session(uid, user.getUsername()));
+            return Response.ok().cookie(cookie).build();
+        } else
+            throw new NotAuthorizedException("Incorrect login");
+    }
+
+    /**
+     * Throws exception if not appropriate user for operation on Hopuse
+     */
+    public Session checkCookieUser(Cookie session, String id)
+            throws NotAuthorizedException {
+        if (session == null || session.getValue() == null)
+            throw new NotAuthorizedException("No session initialized");
+        Session s;
+        try {
+            s = RedisCache.getSession(session.getValue());
+        } catch (CancellationException e) {
+            throw new NotAuthorizedException("No valid session initialized");
+        }
+        if (s == null || s.getUsername() == null || s.getUsername().length() == 0)
+            throw new NotAuthorizedException("No valid session initialized");
+        if (!s.getUsername().equals(id) && !s.getUsername().equals("admin"))
+            throw new NotAuthorizedException("Invalid user : " + s.getUsername());
+        return s;
     }
 }

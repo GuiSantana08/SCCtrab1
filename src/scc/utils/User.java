@@ -1,7 +1,5 @@
 package scc.utils;
 
-import java.util.List;
-
 /**
  * Represents a User, as returned to the clients
  *
@@ -14,15 +12,13 @@ public class User {
     private String name;
     private String pwd;
     private String photoId;
-    private List<String> houseIds;
 
-    public User(String id, String name, String pwd, String photoId, List<String> houseIds) {
+    public User(String id, String name, String pwd, String photoId) {
         super();
         this.id = id;
         this.name = name;
         this.pwd = pwd;
         this.photoId = photoId;
-        this.houseIds = houseIds;
     }
 
     public User() {
@@ -61,18 +57,9 @@ public class User {
         this.photoId = photoId;
     }
 
-    public List<String> getHouseIds() {
-        return houseIds;
-    }
-
-    public void setHouseIds(List<String> houseIds) {
-        this.houseIds = houseIds;
-    }
-
     @Override
     public String toString() {
-        return "User [id=" + id + ", name=" + name + ", pwd=" + pwd + ", photoId=" + photoId + ", houseIds="
-                + houseIds.toString() + "]";
+        return "User [id=" + id + ", name=" + name + ", pwd=" + pwd + ", photoId=" + photoId + "]";
     }
 
 }

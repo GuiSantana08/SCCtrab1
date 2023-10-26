@@ -96,7 +96,7 @@ public class HouseDBLayer {
 
     public CosmosPagedIterable<HouseDAO> getHouseByUserId(String userId) {
         init();
-        return house.queryItems("SELECT * FROM houses WHERE houses.owner=\"" + userId + "\"",
+        return house.queryItems("SELECT * FROM houses WHERE houses.userId=\"" + userId + "\"",
                 new CosmosQueryRequestOptions(),
                 HouseDAO.class);
     }

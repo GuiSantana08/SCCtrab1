@@ -15,7 +15,6 @@ import scc.db.UserDBLayer;
 import scc.interfaces.HouseResourceInterface;
 import scc.utils.House;
 import scc.utils.HouseDAO;
-import scc.utils.UserDAO;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -32,28 +31,11 @@ public class HouseResource implements HouseResourceInterface {
 
     @Override
     public Response createHouse(House house) {
-        UserDAO userDAO;
         try (Jedis jedis = RedisCache.getCachePool().getResource()) {
-            String res = jedis.get(house.getUserId());
-
-            if (res == null) {
-                CosmosPagedIterable<UserDAO> userCosmos = userDb.getUserById(house.getUserId());
-                if (!userCosmos.iterator().hasNext())
-                    return Response.status(404).entity("User not found").build();
-
-                userDAO = (UserDAO) userCosmos.iterator().next();
-            } else {
-                userDAO = mapper.readValue(res, UserDAO.class);
-            }
 
             HouseDAO hDAO = new HouseDAO(house);
             CosmosItemResponse<HouseDAO> h = houseDb.putHouse(hDAO);
             jedis.set(hDAO.getId(), mapper.writeValueAsString(hDAO));
-
-            userDAO.getHouseIds().add(house.getId());
-
-            userDb.updateUser(userDAO);
-            jedis.set(userDAO.getId(), mapper.writeValueAsString(userDAO));
 
             return Response.ok(h.getItem().toString()).build();
         } catch (CosmosException c) {

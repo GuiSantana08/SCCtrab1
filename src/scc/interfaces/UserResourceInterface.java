@@ -3,6 +3,7 @@ package scc.interfaces;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import scc.utils.Login;
 import scc.utils.User;
 
 public interface UserResourceInterface {
@@ -24,4 +25,9 @@ public interface UserResourceInterface {
     @Path("/listHouses")
     @GET
     public Response listHouses(@QueryParam("userId") String userId);
+
+    @POST
+    @Path("/auth")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response auth(Login user);
 }
