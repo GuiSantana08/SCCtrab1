@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>pt.unl.fct.di.scc</groupId>
 	<artifactId>scc2324-lab1</artifactId>
@@ -8,8 +10,21 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<authors>XXXXX-YYYYY-ZZZZZ</authors>
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.version>11</java.version>
+		<functionAppName>scc2324funnortheurope60353</functionAppName>
+		<functionAppRegion>northeurope</functionAppRegion>
+		<functionPricingTier>B1</functionPricingTier>
+		<functionResourceGroup>scc2324-rg-northeurope-60353</functionResourceGroup>
+
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>com.microsoft.azure.functions</groupId>
+			<artifactId>azure-functions-java-library</artifactId>
+			<version>2.2.0</version>
+		</dependency>
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
@@ -96,10 +111,10 @@
 			<version>6.2.5.Final</version>
 		</dependency>
 		<dependency>
-      		<groupId>redis.clients</groupId>
-      		<artifactId>jedis</artifactId>
-      		<version>5.0.1</version>
-    	</dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>5.0.1</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
@@ -142,8 +157,8 @@
 							</resource>
 						</resources>
 					</deployment>
-					<resourceGroup>scc-backend-rg-${authors}</resourceGroup>
-					<appName>scc-backend-58201</appName>
+					<resourceGroup>scc-backend-rg-60353</resourceGroup>
+					<appName>scc-backend-60353</appName>
 				</configuration>
 			</plugin>
 		</plugins>
