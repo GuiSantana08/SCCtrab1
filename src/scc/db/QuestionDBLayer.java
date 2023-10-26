@@ -6,13 +6,14 @@ import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
+import scc.utils.Constants;
 import scc.utils.QuestionDAO;
 
 public class QuestionDBLayer {
 
-    private static final String CONNECTION_URL = "https://cosmos-scc.documents.azure.com:443/";
-    private static final String DB_KEY = "3yJ9ApcLNiJpbJJEPHDS04cbSBZygR3mmcUfeCGnJeJNP1opXQ4Nsofyec5WUtIGxN9NlxszDSZ4ACDb38RUqg==";
-    private static final String DB_NAME = "scc-58201";
+    private static final String CONNECTION_URL = Constants.camposConst.getDbUrl();
+    private static final String DB_KEY = Constants.camposConst.getDbKey();
+    private static final String DB_NAME = Constants.camposConst.getDbName();
 
     private static QuestionDBLayer instance;
 

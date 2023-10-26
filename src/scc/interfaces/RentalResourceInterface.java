@@ -4,10 +4,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import scc.utils.Rental;
-import scc.utils.RentalDAO;
 
 public interface RentalResourceInterface {
-
 
     @Path("/create")
     @POST

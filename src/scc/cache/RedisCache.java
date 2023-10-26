@@ -2,10 +2,11 @@ package scc.cache;
 
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import scc.utils.Constants;
 
 public class RedisCache {
-    private static final String RedisHostname = "scc2324cache60353.redis.cache.windows.net";
-    private static final String RedisKey = "KPfhgREhdW7UTN0HUrLnuVe3uVBpmx5GCAzCaBMcqPo=";
+    private static final String RedisHostname = Constants.camposConst.getRedisHostname();
+    private static final String RedisKey = Constants.camposConst.getredisKey();
 
     private static JedisPool instance;
 
@@ -23,6 +24,5 @@ public class RedisCache {
         poolConfig.setBlockWhenExhausted(true);
         instance = new JedisPool(poolConfig, RedisHostname, 6380, 1000, RedisKey, true);
         return instance;
-
     }
 }

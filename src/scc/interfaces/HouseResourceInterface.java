@@ -1,11 +1,9 @@
 package scc.interfaces;
 
-import com.azure.core.annotation.Get;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import scc.utils.House;
-import scc.utils.HouseDAO;
 
 public interface HouseResourceInterface {
     @Path("/create")
@@ -13,11 +11,9 @@ public interface HouseResourceInterface {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createHouse(House house);
 
-
     @Path("/delete")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response deleteHouse(String json);
+    @DELETE
+    public Response deleteHouse(@QueryParam("id") String id);
 
     @Path("/get")
     @GET
@@ -38,5 +34,5 @@ public interface HouseResourceInterface {
     @Path("/searchAvailableHouses")
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
-    public void searchAvailableHouses(@QueryParam("period") String period);
+    public Response searchAvailableHouses(@QueryParam("period") String period, @QueryParam("location") String location);
 }

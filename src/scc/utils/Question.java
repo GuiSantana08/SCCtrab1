@@ -6,10 +6,15 @@ public class Question {
     private User postUser;
     private String textMessage;
 
-    public Question(House house, User postUser, String textMessage) {
+    public Question(String id, House house, User postUser, String textMessage) {
+        this.id = id;
         this.house = house;
         this.postUser = postUser;
         this.textMessage = textMessage;
+    }
+
+    public Question() {
+        super();
     }
 
     public String getId() {

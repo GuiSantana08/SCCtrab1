@@ -1,6 +1,5 @@
 package scc.utils;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -88,7 +87,7 @@ public class UserDAO {
     }
 
     public User toUser() {
-        return new User(id, name, pwd, photoId);
+        return new User(id, name, pwd, photoId, houseIds);
     }
 
     @Override
