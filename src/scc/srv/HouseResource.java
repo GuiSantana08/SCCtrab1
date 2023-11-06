@@ -3,9 +3,17 @@ package scc.srv;
 import com.azure.cosmos.CosmosException;
 import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.util.CosmosPagedIterable;
+import com.azure.search.documents.SearchClient;
+import com.azure.search.documents.SearchDocument;
+import com.azure.search.documents.models.SearchOptions;
+import com.azure.search.documents.util.SearchPagedIterable;
+import com.azure.search.documents.util.SearchPagedResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import redis.clients.jedis.Jedis;
 
@@ -13,13 +21,16 @@ import scc.cache.RedisCache;
 import scc.db.HouseDBLayer;
 import scc.db.UserDBLayer;
 import scc.interfaces.HouseResourceInterface;
+import scc.search.Props;
 import scc.utils.House;
 import scc.utils.HouseDAO;
 
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Path("/house")
 public class HouseResource implements HouseResourceInterface {
@@ -141,6 +152,29 @@ public class HouseResource implements HouseResourceInterface {
         } catch (Exception e) {
             return Response.status(500).entity(e.getMessage()).build();
         }
+    }
+
+    @GET
+    @Path("/trysearch")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response trySearch() {
+        SearchClient searchClient = Props.searchClient();
+
+        String queryText = "anibal";
+        SearchOptions options = new SearchOptions().setIncludeTotalCount(true).setTop(5);
+
+        SearchPagedIterable searchPagedIterable = searchClient.search(queryText, options, null);
+
+        Map<String, Object> map = new HashMap<>();
+        for (SearchPagedResponse resultResponse : searchPagedIterable.iterableByPage()) {
+            resultResponse.getValue().forEach(searchResult -> {
+                for (Map.Entry<String, Object> res : searchResult.getDocument(SearchDocument.class).entrySet()) {
+                    map.put(res.getKey(), res.getValue());
+                }
+            });
+        }
+
+        return Response.ok(map).build();
     }
 
 }

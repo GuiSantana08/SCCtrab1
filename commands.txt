@@ -4,6 +4,8 @@ To compile + deploy:
 -mudar pom
 -mudar url link e dbName
 
+- //TODO could suggest houses to a user 
+
 -json create house
 {
 "id": "1",

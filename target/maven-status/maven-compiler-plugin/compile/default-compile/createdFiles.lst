@@ -9,11 +9,14 @@ scc\srv\RentalResource.class
 scc\utils\HouseDAO.class
 scc\utils\Question.class
 scc\interfaces\MediaResourceInterface.class
+scc\utils\Login.class
 scc\srv\MediaResource.class
 scc\utils\Constants.class
 scc\cache\RedisCache.class
 scc\utils\Rental.class
 scc\db\QuestionDBLayer.class
+scc\utils\Session.class
+scc\search\Props.class
 scc\srv\MainApplication.class
 scc\srv\UserResource.class
 scc\interfaces\QuestionResourceInterface.class
@@ -22,6 +25,7 @@ scc\db\UserDBLayer.class
 scc\utils\Hash.class
 scc\utils\User.class
 scc\srv\HouseResource.class
+scc\serverless\UsersFunctions.class
 scc\utils\RentalDAO.class
 scc\utils\UserDAO.class
 scc\utils\House.class
