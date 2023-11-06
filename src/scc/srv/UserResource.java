@@ -15,6 +15,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import redis.clients.jedis.Jedis;
 import scc.cache.RedisCache;
 import scc.db.HouseDBLayer;
@@ -35,12 +36,16 @@ public class UserResource implements UserResourceInterface {
     HouseDBLayer houseDb = HouseDBLayer.getInstance();
 
     @Override
-    public Response createUser(User us) {
+    public Response createUser(Cookie session, User us) {
         try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+            checkCookieUser(session, us.getId());
+
             UserDAO user = new UserDAO(us);
             CosmosItemResponse<UserDAO> u = userDb.putUser(user);
             jedis.set(user.getId(), mapper.writeValueAsString(user));
             return Response.ok(u.getItem().toString()).build();
+        } catch (NotAuthorizedException c) {
+            return Response.status(Status.NOT_ACCEPTABLE).entity(c.getLocalizedMessage()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -49,8 +54,9 @@ public class UserResource implements UserResourceInterface {
     }
 
     @Override
-    public Response deleteUser(String userId) {
+    public Response deleteUser(Cookie session, String userId) {
         try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+            checkCookieUser(session, userId);
 
             for (HouseDAO h : houseDb.getHouseByUserId(userId)) {
                 CosmosPagedIterable<HouseDAO> houseCosmos = houseDb.getHouseById(h.getId());
@@ -65,6 +71,8 @@ public class UserResource implements UserResourceInterface {
             jedis.del(userId);
             userDb.delUserById(userId);
             return Response.ok(userId).build();
+        } catch (NotAuthorizedException c) {
+            return Response.status(Status.NOT_ACCEPTABLE).entity(c.getLocalizedMessage()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -73,12 +81,16 @@ public class UserResource implements UserResourceInterface {
     }
 
     @Override
-    public Response updateUser(User user) {
+    public Response updateUser(Cookie session, User user) {
         try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+            checkCookieUser(session, user.getId());
+
             UserDAO uDAO = new UserDAO(user);
             CosmosItemResponse<UserDAO> u = userDb.updateUser(uDAO);
             jedis.set(user.getId(), mapper.writeValueAsString(user));
             return Response.ok(u.getItem().toString()).build();
+        } catch (NotAuthorizedException c) {
+            return Response.status(Status.NOT_ACCEPTABLE).entity(c.getLocalizedMessage()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -133,7 +145,7 @@ public class UserResource implements UserResourceInterface {
     /**
      * Throws exception if not appropriate user for operation on Hopuse
      */
-    public Session checkCookieUser(Cookie session, String id)
+    public static Session checkCookieUser(Cookie session, String id)
             throws NotAuthorizedException {
         if (session == null || session.getValue() == null)
             throw new NotAuthorizedException("No session initialized");
