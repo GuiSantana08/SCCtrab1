@@ -1,0 +1,41 @@
+config:
+  target: 'https://scc-backend-60353.azurewebsites.net/rest/house'
+  plugins:
+    metrics-by-endpoint: {}
+  #processor: "./test-utils.js"
+  #variables:
+  #  metricsProcessEndpoint : "myProcessEndpoint"  # function used to aggregate endpoints for statistics
+  phases:
+  - name: "Warm up"    # WARM UP PHASE: duration: 10s, starting with 1 new client/sec up to 5 new clients/sec
+    duration: 1
+    arrivalRate: 1
+  #  rampTo: 5
+  #- name: "Main test"    # MAIN TESTS: duration: 30s, with 10 new clients/sec
+  #  duration: 30         # NOTE: you should adjust the number of clients per second depending on the complexity
+  #  arrivalRate: 10      # of your scenarios. you need to try a number that can be handled by the server.
+
+
+scenarios:
+  - name: "Create a house"
+    weigth: 0
+    flow:
+      - post:
+          url: "/create"
+          json:
+            id: "5"
+            name: "Anibal"
+            location: "Elvas"
+            description: " Alguma coisa"
+            photoId: "dsadsa"
+            userId: "1"
+            basePrice: 100
+            availability: "october-november-december"
+          capture: 
+            - body:
+              as: "responseBody"
+
+  #- name: "Get an house"
+  #  weight: 1
+  #  flow:
+  #    - get:
+  #        url: "/get?id=5"

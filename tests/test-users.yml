@@ -1,0 +1,57 @@
+config:
+  target: 'https://scc-backend-60353.azurewebsites.net/rest/user'
+  plugins:
+    metrics-by-endpoint: {}
+  #processor: "./test-utils.js"
+  #variables:
+  #  metricsProcessEndpoint : "myProcessEndpoint"  # function used to aggregate endpoints for statistics
+  phases:
+  - name: "Warm up"    # WARM UP PHASE: duration: 10s, starting with 1 new client/sec up to 5 new clients/sec
+    duration: 1
+    arrivalRate: 1
+  #  rampTo: 5
+  #- name: "Main test"    # MAIN TESTS: duration: 30s, with 10 new clients/sec
+  #  duration: 30         # NOTE: you should adjust the number of clients per second depending on the complexity
+  #  arrivalRate: 10      # of your scenarios. you need to try a number that can be handled by the server.
+
+
+scenarios:
+  - name: "Create a user"
+    flow:
+      - post:
+          url: "/create"
+          json:
+            id: "1"
+            name: "Test User"
+            pwd: "password"
+            photoId: "photo123"
+  
+  - name: "Update a user"
+    flow:
+      - put:
+          url: "/update"
+          json:
+            id: "1"
+            name: "Updated User"
+            pwd: "newpassword"
+            photoId: "newphoto123"
+  
+  - name: "List houses"
+    flow:
+      - get:
+          url: "/listHouses?userId=1"
+  
+  - name: "Authenticate a user"
+    flow:
+      - post:
+          url: "/auth"
+          json:
+            id: "1"
+            name: "Auth User"
+            pwd: "password"
+
+  - name: "Delete a user"
+    flow:
+      - delete:
+          url: "/delete?userId=1"
+          
