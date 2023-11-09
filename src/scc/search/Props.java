@@ -1,9 +1,5 @@
 package scc.search;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
-
 import com.azure.core.credential.AzureKeyCredential;
 import com.azure.search.documents.SearchClient;
 import com.azure.search.documents.SearchClientBuilder;
@@ -19,26 +15,11 @@ public class Props {
 
     public static final String PROPS_FILE = "azurekeys.props";
 
-    private static Properties props;
-
-    public static synchronized Properties getProperties() {
-        if (props == null) {
-            props = new Properties();
-            try {
-                props.load(new FileInputStream(PROPS_FILE));
-            } catch (IOException e) {
-                // do nothing
-            }
-        }
-        return props;
-    }
-
     public static SearchClient searchClient() {
-        props = getProperties();
 
         SearchClient searchClient = new SearchClientBuilder()
-                .credential(new AzureKeyCredential(props.getProperty(PROP_QUERY_KEY)))
-                .endpoint(props.getProperty(PROP_SERVICE_URL)).indexName(props.getProperty(PROP_INDEX_NAME))
+                .credential(new AzureKeyCredential(PROP_QUERY_KEY))
+                .endpoint(PROP_SERVICE_URL).indexName(PROP_INDEX_NAME)
                 .buildClient();
 
         return searchClient;

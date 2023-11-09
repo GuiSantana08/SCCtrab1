@@ -4,7 +4,10 @@ import com.azure.cosmos.CosmosException;
 import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.util.CosmosPagedIterable;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import redis.clients.jedis.Jedis;
@@ -21,13 +24,17 @@ public class RentalResource implements RentalResourceInterface {
     RentalDBLayer rentalDB = RentalDBLayer.getInstance();
 
     @Override
-    public Response createRental(Rental rental) {
+    public Response createRental(Cookie session, Rental rental) {
         try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+            // UserResource.checkCookieUser(session, ); TODO
+
             RentalDAO rDAO = new RentalDAO(rental);
             CosmosItemResponse<RentalDAO> h = rentalDB.putRental(rDAO);
             jedis.set(rental.getId(), mapper.writeValueAsString(rental));
 
             return Response.ok(mapper.writeValueAsString(h)).build();
+        } catch (NotAuthorizedException c) {
+            return Response.status(Status.NOT_ACCEPTABLE).entity(c.getLocalizedMessage()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -36,13 +43,17 @@ public class RentalResource implements RentalResourceInterface {
     }
 
     @Override
-    public Response updateRental(Rental rental) {
+    public Response updateRental(Cookie session, Rental rental) {
         try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+            // UserResource.checkCookieUser(session, ); TODO
             RentalDAO rDAO = new RentalDAO(rental);
             CosmosItemResponse<RentalDAO> r = rentalDB.updateRental(rDAO);
             jedis.set(rental.getId(), mapper.writeValueAsString(rental));
 
             return Response.ok(mapper.writeValueAsString(r)).build();
+
+        } catch (NotAuthorizedException c) {
+            return Response.status(Status.NOT_ACCEPTABLE).entity(c.getLocalizedMessage()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {

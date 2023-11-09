@@ -1,6 +1,7 @@
 package scc.interfaces;
 
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import scc.utils.House;
@@ -9,11 +10,11 @@ public interface HouseResourceInterface {
     @Path("/create")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createHouse(House house);
+    public Response createHouse(@CookieParam("scc:session") Cookie session, House house);
 
     @Path("/delete")
     @DELETE
-    public Response deleteHouse(@QueryParam("id") String id);
+    public Response deleteHouse(@CookieParam("scc:session") Cookie session, @QueryParam("id") String id);
 
     @Path("/get")
     @GET
@@ -24,7 +25,7 @@ public interface HouseResourceInterface {
     @Path("/update")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateHouse(House house);
+    public Response updateHouse(@CookieParam("scc:session") Cookie session, House house);
 
     @Path("/getHouseByLocation")
     @GET

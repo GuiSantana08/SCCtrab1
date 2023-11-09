@@ -11,10 +11,13 @@ import com.azure.search.documents.util.SearchPagedResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import redis.clients.jedis.Jedis;
 
 import scc.cache.RedisCache;
@@ -41,14 +44,17 @@ public class HouseResource implements HouseResourceInterface {
     UserDBLayer userDb = UserDBLayer.getInstance();
 
     @Override
-    public Response createHouse(House house) {
+    public Response createHouse(Cookie session, House house) {
         try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+            UserResource.checkCookieUser(session, house.getUserId());
 
             HouseDAO hDAO = new HouseDAO(house);
             CosmosItemResponse<HouseDAO> h = houseDb.putHouse(hDAO);
             jedis.set(hDAO.getId(), mapper.writeValueAsString(hDAO));
 
             return Response.ok(h.getItem().toString()).build();
+        } catch (NotAuthorizedException c) {
+            return Response.status(Status.NOT_ACCEPTABLE).entity(c.getLocalizedMessage()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -57,11 +63,15 @@ public class HouseResource implements HouseResourceInterface {
     }
 
     @Override
-    public Response deleteHouse(String id) {
+    public Response deleteHouse(Cookie session, String id) {
         try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+            // UserResource.checkCookieUser(session, house.getUserId()); TODO
+
             houseDb.delHouseById(id);
             jedis.del(id);
             return Response.ok().build();
+        } catch (NotAuthorizedException c) {
+            return Response.status(Status.NOT_ACCEPTABLE).entity(c.getLocalizedMessage()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -90,14 +100,17 @@ public class HouseResource implements HouseResourceInterface {
     }
 
     @Override
-    public Response updateHouse(House house) {
+    public Response updateHouse(Cookie session, House house) {
         try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+            UserResource.checkCookieUser(session, house.getUserId());
 
             HouseDAO hDAO = new HouseDAO(house);
             CosmosItemResponse<HouseDAO> h = houseDb.updateHouse(house.getId(), hDAO);
 
             jedis.set(house.getId(), mapper.writeValueAsString(house));
             return Response.ok(h.getItem().toString()).build();
+        } catch (NotAuthorizedException c) {
+            return Response.status(Status.NOT_ACCEPTABLE).entity(c.getLocalizedMessage()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -157,11 +170,16 @@ public class HouseResource implements HouseResourceInterface {
     @GET
     @Path("/trysearch")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response trySearch() {
+    public Response trySearch() { // TODO make a better function
         SearchClient searchClient = Props.searchClient();
 
         String queryText = "anibal";
-        SearchOptions options = new SearchOptions().setIncludeTotalCount(true).setTop(5);
+        SearchOptions options = new SearchOptions()
+                .setIncludeTotalCount(true)
+                .setFilter("location eq 'Elvas'")
+                .setSelect("rid", "userId", "name", "location", "description")
+                .setSearchFields("name")
+                .setTop(5);
 
         SearchPagedIterable searchPagedIterable = searchClient.search(queryText, options, null);
 

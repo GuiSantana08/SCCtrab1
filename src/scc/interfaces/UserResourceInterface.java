@@ -1,6 +1,7 @@
 package scc.interfaces;
 
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import scc.utils.Login;
@@ -11,16 +12,16 @@ public interface UserResourceInterface {
     @Path("/create")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createUser(User user);
+    public Response createUser(@CookieParam("scc:session") Cookie session, User user);
 
     @Path("/delete")
     @DELETE
-    public Response deleteUser(@QueryParam("userId") String userId);
+    public Response deleteUser(@CookieParam("scc:session") Cookie session, @QueryParam("userId") String userId);
 
     @Path("/update")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateUser(User user);
+    public Response updateUser(@CookieParam("scc:session") Cookie session, User user);
 
     @Path("/listHouses")
     @GET
