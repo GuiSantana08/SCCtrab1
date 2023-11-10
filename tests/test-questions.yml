@@ -1,0 +1,17 @@
+config:
+  target: 'https://scc-backend-60353.azurewebsites.net/rest/house'
+  http:
+    timeout: 60
+  plugins:
+    metrics-by-endpoint: {}
+    #metricsProcessEndpoint : "myProcessEndpoint"  # function used to aggregate endpoints for statistics
+  processor: "./test-utils.js"
+  variables:
+    numAuctions: 20
+  phases:
+  - name: "Warm up"    # WARM UP PHASE: duration: 10s, starting with 1 new client/sec up to 5 new clients/sec
+    duration: 1
+    arrivalRate: 1
+
+
+scenarios:

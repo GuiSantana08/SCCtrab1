@@ -2,6 +2,8 @@ package scc.cache;
 
 import java.util.concurrent.CancellationException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -12,7 +14,10 @@ public class RedisCache {
     private static final String RedisHostname = Constants.camposConst.getRedisHostname();
     private static final String RedisKey = Constants.camposConst.getredisKey();
 
+    private static final int TTL = 60 * 15;
+
     private static JedisPool instance;
+    private static RedisCache cache;
 
     public synchronized static JedisPool getCachePool() {
         if (instance != null)
@@ -30,15 +35,55 @@ public class RedisCache {
         return instance;
     }
 
-    public static void putSession(Session session) {
+    public synchronized static RedisCache getInstance() {
+        if (cache != null)
+            return cache;
+        cache = new RedisCache();
+        return cache;
+    }
+
+    public <T> void setValue(String id, T item) {
+        ObjectMapper mapper = new ObjectMapper();
         try (Jedis jedis = RedisCache.getCachePool().getResource()) {
-            jedis.set(session.getUid(), session.getUsername());
+            String cacheId = item.getClass().getSimpleName() + ":" + id;
+            jedis.set(cacheId, mapper.writeValueAsString(item));
+            jedis.expire(cacheId, TTL);
         } catch (Exception e) {
-            // TODO
+            System.out.println(e.getMessage());
         }
     }
 
-    public static Session getSession(String uid) {
+    public <T> T getValue(String id, Class<T> type) {
+        try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+            String str = jedis.get(type.getSimpleName() + ":" + id);
+            ObjectMapper mapper = new ObjectMapper();
+            T item = null;
+            try {
+                item = mapper.readValue(str, type);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+            return item;
+        }
+    }
+
+    public <T> void delete(String id, Class<T> type) {
+        try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+            jedis.del(type.getSimpleName() + ":" + id);
+        }
+    }
+
+    public void putSession(Session session) {
+        try (Jedis jedis = RedisCache.getCachePool().getResource()) {
+            String cacheId = "session:" + session.getUid();
+            jedis.set(cacheId, session.getUsername());
+            jedis.expire(cacheId, TTL);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public Session getSession(String uid) {
         try (Jedis jedis = RedisCache.getCachePool().getResource()) {
             String res = jedis.get(uid);
 

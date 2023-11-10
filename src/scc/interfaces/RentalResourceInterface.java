@@ -11,19 +11,26 @@ public interface RentalResourceInterface {
     @Path("/create")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createRental(@CookieParam("scc:session") Cookie session, Rental rental);
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createRental(@HeaderParam("isCacheActive") boolean isCacheActive,
+            @HeaderParam("isAuthActive") boolean isAuthActive, @CookieParam("scc:session") Cookie session,
+            Rental rental, @PathParam("id") String id);
 
     @Path("/update")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateRental(@CookieParam("scc:session") Cookie session, Rental rental);
+    public Response updateRental(@HeaderParam("isCacheActive") boolean isCacheActive,
+            @HeaderParam("isAuthActive") boolean isAuthActive, @CookieParam("scc:session") Cookie session,
+            Rental rental, @PathParam("id") String id);
 
     @Path("/getInfo")
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response getRentalInfo(String id);
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getRentalInfo(@HeaderParam("isCacheActive") boolean isCacheActive, @QueryParam("id") String id);
 
     @Path("/listDiscontedRentals")
     @GET
-    public void listDiscountedRentals();
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response listDiscountedRentals();
 }

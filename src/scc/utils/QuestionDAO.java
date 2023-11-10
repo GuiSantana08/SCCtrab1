@@ -4,18 +4,18 @@ public class QuestionDAO {
     private String _rid;
     private String _ts;
     private String id;
-    private House house;
-    private User postUser;
+    private String houseId;
+    private String postUserId;
     private String textMessage;
 
     public QuestionDAO(Question q) {
-        this(q.getId(), q.getHouse(), q.getPostUser(), q.getTextMessage());
+        this(q.getId(), "-1", q.getPostUserId(), q.getTextMessage());
     }
 
-    public QuestionDAO(String id, House house, User postUser, String textMessage) {
+    public QuestionDAO(String id, String house, String postUser, String textMessage) {
         this.id = id;
-        this.house = house;
-        this.postUser = postUser;
+        this.houseId = house;
+        this.postUserId = postUser;
         this.textMessage = textMessage;
     }
 
@@ -43,20 +43,20 @@ public class QuestionDAO {
         this.id = id;
     }
 
-    public House getHouse() {
-        return this.house;
+    public String getHouseId() {
+        return this.houseId;
     }
 
-    public void setHouse(House house) {
-        this.house = house;
+    public void setHouse(String house) {
+        this.houseId = house;
     }
 
-    public User getPostUser() {
-        return this.postUser;
+    public String getPostUser() {
+        return this.postUserId;
     }
 
-    public void setPostUser(User postUser) {
-        this.postUser = postUser;
+    public void setPostUser(String postUserId) {
+        this.postUserId = postUserId;
     }
 
     public String getTextMessage() {

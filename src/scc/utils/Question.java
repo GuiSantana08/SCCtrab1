@@ -2,14 +2,12 @@ package scc.utils;
 
 public class Question {
     private String id;
-    private House house;
-    private User postUser;
+    private String postUserId;
     private String textMessage;
 
-    public Question(String id, House house, User postUser, String textMessage) {
+    public Question(String id, String postUser, String textMessage) {
         this.id = id;
-        this.house = house;
-        this.postUser = postUser;
+        this.postUserId = postUser;
         this.textMessage = textMessage;
     }
 
@@ -25,20 +23,12 @@ public class Question {
         this.id = id;
     }
 
-    public House getHouse() {
-        return this.house;
+    public String getPostUserId() {
+        return this.postUserId;
     }
 
-    public void setHouse(House house) {
-        this.house = house;
-    }
-
-    public User getPostUser() {
-        return this.postUser;
-    }
-
-    public void setPostUser(User postUser) {
-        this.postUser = postUser;
+    public void setPostUser(String postUser) {
+        this.postUserId = postUser;
     }
 
     public String getTextMessage() {

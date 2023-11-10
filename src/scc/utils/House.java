@@ -1,7 +1,5 @@
 package scc.utils;
 
-import java.util.Map;
-
 public class House {
 
     private String id;
@@ -11,11 +9,11 @@ public class House {
     private String photoId;
     private String userId;
     private int basePrice;
-    private Map<String, Accessibility> available;
+    private String availability;
 
     public House(String id, String name, String location, String description, String photoId, String userId,
             int basePrice,
-            Map<String, Accessibility> available) {
+            String availability) {
         super();
         this.id = id;
         this.name = name;
@@ -24,7 +22,7 @@ public class House {
         this.photoId = photoId;
         this.userId = userId;
         this.basePrice = basePrice;
-        this.available = available;
+        this.availability = availability;
     }
 
     public House() {
@@ -87,12 +85,12 @@ public class House {
         this.basePrice = basePrice;
     }
 
-    public Map<String, Accessibility> getAvailable() {
-        return this.available;
+    public String getAvailability() {
+        return this.availability;
     }
 
-    public void setAvailable(Map<String, Accessibility> available) {
-        this.available = available;
+    public void setAvailability(String available) {
+        this.availability = available;
     }
 
     @Override

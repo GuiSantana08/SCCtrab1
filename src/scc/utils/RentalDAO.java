@@ -6,14 +6,18 @@ public class RentalDAO {
     private String id;
     private String houseId;
     private String userId;
-    private int rentalPeriod;
+    private String rentalPeriod;
     private int price;
 
-    public RentalDAO(Rental r) {
-        this(r.getId(), r.getHouse(), r.getRentingUser(), r.getRentalPeriod(), r.getPrice());
+    public RentalDAO() {
     }
 
-    public RentalDAO(String id, String houseId, String userId, int rentalPeriod, int price) {
+    public RentalDAO(Rental r, String id) {
+        this(r.getId(), id, r.getUserId(), r.getRentalPeriod(), r.getPrice());
+    }
+
+    public RentalDAO(String id, String houseId, String userId, String rentalPeriod, int price) {
+        super();
         this.id = id;
         this.houseId = houseId;
         this.userId = userId;
@@ -22,7 +26,7 @@ public class RentalDAO {
     }
 
     public String get_rid() {
-        return this._rid;
+        return _rid;
     }
 
     public void set_rid(String _rid) {
@@ -30,7 +34,7 @@ public class RentalDAO {
     }
 
     public String get_ts() {
-        return this._ts;
+        return _ts;
     }
 
     public void set_ts(String _ts) {
@@ -38,43 +42,52 @@ public class RentalDAO {
     }
 
     public String getId() {
-        return this.id;
+        return id;
     }
 
     public void setId(String id) {
         this.id = id;
     }
 
-    public String getHouse() {
-        return this.houseId;
+    public String getHouseId() {
+        return houseId;
     }
 
-    public void setHouse(String houseId) {
+    public void setHouseId(String houseId) {
         this.houseId = houseId;
     }
 
-    public String getRentingUser() {
-        return this.userId;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setRentingUser(String userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public int getRentalPeriod() {
-        return this.rentalPeriod;
+    public String getRentalPeriod() {
+        return rentalPeriod;
     }
 
-    public void setRentalPeriod(int rentalPeriod) {
+    public void setRentalPeriod(String rentalPeriod) {
         this.rentalPeriod = rentalPeriod;
     }
 
     public int getPrice() {
-        return this.price;
+        return price;
     }
 
     public void setPrice(int price) {
         this.price = price;
     }
 
+    public Rental toRental() {
+        return new Rental(id, userId, rentalPeriod, price);
+    }
+
+    @Override
+    public String toString() {
+        return "RentalDAO [_rid=" + _rid + ", _ts=" + _ts + ", id=" + id + ", houseId=" + houseId + ", userId=" + userId
+                + ", rentalPeriod=" + rentalPeriod + ", price=" + price + "]";
+    }
 }

@@ -13,28 +13,35 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import redis.clients.jedis.Jedis;
 import scc.cache.RedisCache;
 import scc.db.QuestionDBLayer;
 import scc.interfaces.QuestionResourceInterface;
 import scc.utils.Question;
 import scc.utils.QuestionDAO;
 
-@Path("/house/{id}/question") // TODO: instead of inserting house on json, use id to get it
+@Path("/house/{id}/question")
 public class QuestionResource implements QuestionResourceInterface {
 
     ObjectMapper mapper = new ObjectMapper();
     QuestionDBLayer questionDb = QuestionDBLayer.getInstance();
 
+    static RedisCache cache = RedisCache.getInstance();
+
     @Override
-    // TODO: recebe user sem casa associada, vai buscar pelo id e guarda no DAO
-    public Response createQuestion(Cookie session, String id, Question question) {
-        try (Jedis jedis = RedisCache.getCachePool().getResource()) {
-            UserResource.checkCookieUser(session, question.getHouse().getUserId());
+    public Response createQuestion(boolean isCacheActive, boolean isAuthActive, Cookie session, String id,
+            Question question) {
+        try {
+            if (isAuthActive) {
+                UserResource.checkCookieUser(session, question.getPostUserId());
+            }
 
             QuestionDAO qDAo = new QuestionDAO(question);
+            qDAo.setHouse(id);
             CosmosItemResponse<QuestionDAO> q = questionDb.putQuestion(qDAo);
-            jedis.set(question.getId(), mapper.writeValueAsString(question));
+
+            if (isCacheActive) {
+                cache.setValue(question.getId(), question);
+            }
 
             return Response.ok(mapper.writeValueAsString(q)).build();
         } catch (NotAuthorizedException c) {

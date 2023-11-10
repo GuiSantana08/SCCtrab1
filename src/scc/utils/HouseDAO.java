@@ -1,7 +1,5 @@
 package scc.utils;
 
-import java.util.Map;
-
 public class HouseDAO {
     private String _rid;
     private String _ts;
@@ -12,8 +10,7 @@ public class HouseDAO {
     private String photoId;
     private String userId;
     private int basePrice;
-    private Map<String, Accessibility> available;
-    // TODO: make the availability system
+    private String availability;
 
     public HouseDAO() {
     }
@@ -21,12 +18,12 @@ public class HouseDAO {
     public HouseDAO(House h) {
         this(h.getId(), h.getName(), h.getLocation(), h.getDescription(), h.getPhotoId(), h.getUserId(),
                 h.getBasePrice(),
-                h.getAvailable());
+                h.getAvailability());
     }
 
     public HouseDAO(String id, String name, String location, String description, String photoId, String userId,
             int basePrice,
-            Map<String, Accessibility> available) {
+            String availability) {
         super();
         this.id = id;
         this.name = name;
@@ -35,7 +32,7 @@ public class HouseDAO {
         this.photoId = photoId;
         this.userId = userId;
         this.basePrice = basePrice;
-        this.available = available;
+        this.availability = availability;
     }
 
     public String get_rid() {
@@ -110,12 +107,12 @@ public class HouseDAO {
         this.basePrice = basePrice;
     }
 
-    public Map<String, Accessibility> getAvailable() {
-        return this.available;
+    public String getAvailability() {
+        return this.availability;
     }
 
-    public void setAvailable(Map<String, Accessibility> available) {
-        this.available = available;
+    public void setAvailability(String available) {
+        this.availability = available;
     }
 
     @Override

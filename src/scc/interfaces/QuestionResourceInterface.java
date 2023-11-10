@@ -3,6 +3,7 @@ package scc.interfaces;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.CookieParam;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -16,7 +17,9 @@ public interface QuestionResourceInterface {
     @Path("/create")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createQuestion(@CookieParam("scc:session") Cookie session, @PathParam("id") String id,
+    public Response createQuestion(@HeaderParam("isCacheActive") boolean isCacheActive,
+            @HeaderParam("isAuthActive") boolean isAuthActive, @CookieParam("scc:session") Cookie session,
+            @PathParam("id") String id,
             Question question);
 
     @Path("/listQuestions")

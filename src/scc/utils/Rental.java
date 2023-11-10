@@ -2,14 +2,12 @@ package scc.utils;
 
 public class Rental {
     private String id;
-    private String houseId;
     private String userId;
-    private int rentalPeriod;
+    private String rentalPeriod;
     private int price;
 
-    public Rental(String id, String houseId, String userId, int rentalPeriod, int price) {
+    public Rental(String id, String userId, String rentalPeriod, int price) {
         this.id = id;
-        this.houseId = houseId;
         this.userId = userId;
         this.rentalPeriod = rentalPeriod;
         this.price = price;
@@ -27,31 +25,28 @@ public class Rental {
         this.id = id;
     }
 
-    public String getHouse() {
-        return this.houseId;
-    }
-
-    public void setHouse(String houseId) {
-        this.houseId = houseId;
-    }
-
-    public String getRentingUser() {
+    public String getUserId() {
         return this.userId;
     }
 
-    public void setRentingUser(String userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public int getRentalPeriod() {
+    public String getRentalPeriod() {
         return this.rentalPeriod;
     }
 
-    public void setRentalPeriod(int rentalPeriod) {
+    public void setRentalPeriod(String rentalPeriod) {
         this.rentalPeriod = rentalPeriod;
     }
 
     public int getPrice() {
         return this.price;
     }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
 }

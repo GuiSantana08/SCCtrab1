@@ -1,41 +1,164 @@
 config:
   target: 'https://scc-backend-60353.azurewebsites.net/rest/house'
+  http:
+    timeout: 60
   plugins:
     metrics-by-endpoint: {}
-  #processor: "./test-utils.js"
-  #variables:
-  #  metricsProcessEndpoint : "myProcessEndpoint"  # function used to aggregate endpoints for statistics
+    #metricsProcessEndpoint : "myProcessEndpoint"  # function used to aggregate endpoints for statistics
+  processor: "./test-utils.js"
+  variables:
+    numAuctions: 20
   phases:
   - name: "Warm up"    # WARM UP PHASE: duration: 10s, starting with 1 new client/sec up to 5 new clients/sec
     duration: 1
     arrivalRate: 1
-  #  rampTo: 5
-  #- name: "Main test"    # MAIN TESTS: duration: 30s, with 10 new clients/sec
-  #  duration: 30         # NOTE: you should adjust the number of clients per second depending on the complexity
-  #  arrivalRate: 10      # of your scenarios. you need to try a number that can be handled by the server.
 
 
 scenarios:
-  - name: "Create a house"
-    weigth: 0
+  - name: "House Cycle 0-Cache 0-Auth"
+    weight: 0
+    flow:
+      - loop:
+        - post:
+            url: "/create"
+            headers:
+                  Cookie: "scc:session={{sessionCookie}}"
+                  isCacheActive: false
+                  isAuthActive: false
+            json:
+              id: "6"
+              name: "Anibal"
+              location: "Elvas"
+              description: " Alguma coisa"
+              photoId: "dsadsa"
+              userId: "1"
+              basePrice: 100
+              availability: "october-november-december"
+        - put: 
+            url: "/update"
+            headers:
+                  Cookie: "scc:session={{sessionCookie}}"
+                  isCacheActive: false
+                  isAuthActive: false
+            json:
+              id: "6"
+              name: "Anibal"
+              location: "Elvas"
+              description: " Alguma coisa"
+              photoId: "dsadsa"
+              userId: "1"
+              basePrice: 100
+              availability: "october-november-december"
+        - get:
+            url: "/get?id=6"
+            headers:
+                  Cookie: "scc:session={{sessionCookie}}"
+                  isCacheActive: false
+                  isAuthActive: false
+            afterResponse: "printStatus"
+        - delete: 
+            url: "/delete?id=6"
+            headers:
+                  Cookie: "scc:session={{sessionCookie}}"
+                  isCacheActive: false
+                  isAuthActive: false
+        count: "{{ numAuctions }}"
+  - name: "Test Listing 0-Rentals"
+    weight: 1
     flow:
       - post:
           url: "/create"
+          headers:
+                Cookie: "scc:session={{sessionCookie}}"
+                isCacheActive: false
+                isAuthActive: false
           json:
-            id: "5"
+            id: "1"
             name: "Anibal"
             location: "Elvas"
             description: " Alguma coisa"
             photoId: "dsadsa"
             userId: "1"
             basePrice: 100
-            availability: "october-november-december"
-          capture: 
-            - body:
-              as: "responseBody"
+            availability: "october-november"
+      - post:
+          url: "/create"
+          headers:
+                Cookie: "scc:session={{sessionCookie}}"
+                isCacheActive: false
+                isAuthActive: false
+          json:
+            id: "2"
+            name: "Anibal"
+            location: "Elvas"
+            description: " Alguma coisa"
+            photoId: "dsadsa"
+            userId: "1"
+            basePrice: 100
+            availability: "november-december"
+      - post:
+          url: "/create"
+          headers:
+                Cookie: "scc:session={{sessionCookie}}"
+                isCacheActive: false
+                isAuthActive: false
+          json:
+            id: "3"
+            name: "Anibal"
+            location: "Elvas"
+            description: " Alguma coisa"
+            photoId: "dsadsa"
+            userId: "1"
+            basePrice: 100
+            availability: "december"
+      - get: 
+          url: "/getHouseByLocation?location=Elvas"
+          headers:
+                Cookie: "scc:session={{sessionCookie}}"
+                isCacheActive: false
+                isAuthActive: false
+          afterResponse: "printStatus"
+      - get:
+          url: "/searchAvailableHouses?period=november&location=Elvas"
+          headers:
+                Cookie: "scc:session={{sessionCookie}}"
+                isCacheActive: false
+                isAuthActive: false
+          afterResponse: "printStatus"
+      - get:
+          url: "/searchAvailableHouses?period=december&location=Elvas"
+          headers:
+                Cookie: "scc:session={{sessionCookie}}"
+                isCacheActive: false
+                isAuthActive: false
+          afterResponse: "printStatus"
+      - get:
+          url: "/searchAvailableHouses?period=october&location=Elvas"
+          headers:
+                Cookie: "scc:session={{sessionCookie}}"
+                isCacheActive: false
+                isAuthActive: false
+          afterResponse: "printStatus"
+      - delete: 
+            url: "/delete?id=1"
+            headers:
+                  Cookie: "scc:session={{sessionCookie}}"
+                  isCacheActive: false
+                  isAuthActive: false
+      - delete: 
+            url: "/delete?id=2"
+            headers:
+                  Cookie: "scc:session={{sessionCookie}}"
+                  isCacheActive: false
+                  isAuthActive: false
+      - delete: 
+            url: "/delete?id=3"
+            headers:
+                  Cookie: "scc:session={{sessionCookie}}"
+                  isCacheActive: false
+                  isAuthActive: false
+      
 
-  #- name: "Get an house"
-  #  weight: 1
-  #  flow:
-  #    - get:
-  #        url: "/get?id=5"
+       
+      
+

@@ -12,16 +12,21 @@ public interface UserResourceInterface {
     @Path("/create")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createUser(@CookieParam("scc:session") Cookie session, User user);
+    public Response createUser(@HeaderParam("isCacheActive") boolean isCacheActive,
+            @HeaderParam("isAuthActive") boolean isAuthActive,
+            @CookieParam("scc:session") Cookie session, User user);
 
     @Path("/delete")
     @DELETE
-    public Response deleteUser(@CookieParam("scc:session") Cookie session, @QueryParam("userId") String userId);
+    public Response deleteUser(@HeaderParam("isCacheActive") boolean isCacheActive,
+            @HeaderParam("isAuthActive") boolean isAuthActive, @CookieParam("scc:session") Cookie session,
+            @QueryParam("userId") String userId);
 
     @Path("/update")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateUser(@CookieParam("scc:session") Cookie session, User user);
+    public Response updateUser(@HeaderParam("isCacheActive") boolean isCacheActive,
+            @HeaderParam("isAuthActive") boolean isAuthActive, @CookieParam("scc:session") Cookie session, User user);
 
     @Path("/listHouses")
     @GET

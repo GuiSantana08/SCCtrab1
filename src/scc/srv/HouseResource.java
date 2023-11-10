@@ -18,18 +18,18 @@ import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import redis.clients.jedis.Jedis;
 
 import scc.cache.RedisCache;
 import scc.db.HouseDBLayer;
+import scc.db.RentalDBLayer;
 import scc.db.UserDBLayer;
 import scc.interfaces.HouseResourceInterface;
 import scc.search.Props;
 import scc.utils.House;
 import scc.utils.HouseDAO;
+import scc.utils.RentalDAO;
 
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,18 +39,26 @@ import java.util.Map;
 public class HouseResource implements HouseResourceInterface {
 
     ObjectMapper mapper = new ObjectMapper();
-    HouseDBLayer houseDb = HouseDBLayer.getInstance();
 
+    HouseDBLayer houseDb = HouseDBLayer.getInstance();
+    RentalDBLayer rentDb = RentalDBLayer.getInstance();
     UserDBLayer userDb = UserDBLayer.getInstance();
 
+    static RedisCache cache = RedisCache.getInstance();
+
     @Override
-    public Response createHouse(Cookie session, House house) {
-        try (Jedis jedis = RedisCache.getCachePool().getResource()) {
-            UserResource.checkCookieUser(session, house.getUserId());
+    public Response createHouse(boolean isCacheActive, boolean isAuthActive, Cookie session, House house) {
+        try {
+            if (isAuthActive) {
+                UserResource.checkCookieUser(session, house.getUserId());
+            }
 
             HouseDAO hDAO = new HouseDAO(house);
             CosmosItemResponse<HouseDAO> h = houseDb.putHouse(hDAO);
-            jedis.set(hDAO.getId(), mapper.writeValueAsString(hDAO));
+
+            if (isCacheActive) {
+                cache.setValue(hDAO.getId(), hDAO);
+            }
 
             return Response.ok(h.getItem().toString()).build();
         } catch (NotAuthorizedException c) {
@@ -63,12 +71,18 @@ public class HouseResource implements HouseResourceInterface {
     }
 
     @Override
-    public Response deleteHouse(Cookie session, String id) {
-        try (Jedis jedis = RedisCache.getCachePool().getResource()) {
-            // UserResource.checkCookieUser(session, house.getUserId()); TODO
+    public Response deleteHouse(boolean isCacheActive, boolean isAuthActive, Cookie session, String id) {
+        try {
+            if (isAuthActive) {
+                // UserResource.checkCookieUser(session, house.getUserId()); TODO
+            }
 
             houseDb.delHouseById(id);
-            jedis.del(id);
+
+            if (isCacheActive) {
+                cache.delete(id, HouseDAO.class);
+            }
+
             return Response.ok().build();
         } catch (NotAuthorizedException c) {
             return Response.status(Status.NOT_ACCEPTABLE).entity(c.getLocalizedMessage()).build();
@@ -80,16 +94,22 @@ public class HouseResource implements HouseResourceInterface {
     }
 
     @Override
-    public Response getHouse(String id) {
-        try (Jedis jedis = RedisCache.getCachePool().getResource()) {
-            String res = jedis.get(id);
-            if (res == null) {
-                var h = houseDb.getHouseById(id);
-                jedis.set(id, mapper.writeValueAsString(h));
-                return Response.ok(h.iterator().next()).build();
+    public Response getHouse(boolean isCacheActive, boolean isAuthActive, String id) {
+        try {
+            HouseDAO h = null;
+            if (isCacheActive) {
+                h = cache.getValue(id, HouseDAO.class);
             }
 
-            HouseDAO h = mapper.readValue(res, HouseDAO.class);
+            if (h == null) {
+                var newH = houseDb.getHouseById(id);
+
+                if (isCacheActive) {
+                    cache.setValue(id, newH);
+                }
+
+                return Response.ok(newH.iterator().next()).build();
+            }
 
             return Response.ok(h).build();
         } catch (CosmosException c) {
@@ -100,14 +120,19 @@ public class HouseResource implements HouseResourceInterface {
     }
 
     @Override
-    public Response updateHouse(Cookie session, House house) {
-        try (Jedis jedis = RedisCache.getCachePool().getResource()) {
-            UserResource.checkCookieUser(session, house.getUserId());
+    public Response updateHouse(boolean isCacheActive, boolean isAuthActive, Cookie session, House house) {
+        try {
+            if (isAuthActive) {
+                UserResource.checkCookieUser(session, house.getUserId());
+            }
 
             HouseDAO hDAO = new HouseDAO(house);
             CosmosItemResponse<HouseDAO> h = houseDb.updateHouse(house.getId(), hDAO);
 
-            jedis.set(house.getId(), mapper.writeValueAsString(house));
+            if (isCacheActive) {
+                cache.setValue(house.getId(), house);
+            }
+
             return Response.ok(h.getItem().toString()).build();
         } catch (NotAuthorizedException c) {
             return Response.status(Status.NOT_ACCEPTABLE).entity(c.getLocalizedMessage()).build();
@@ -126,11 +151,17 @@ public class HouseResource implements HouseResourceInterface {
             String currentMonth = LocalDate.now().getMonth().toString().toLowerCase();
 
             for (HouseDAO h : houseCosmos) {
-                if (!h.getAvailable().get(currentMonth).isOcupied())
+                CosmosPagedIterable<RentalDAO> rentals = rentDb.getHouseById(h.getId());
+                boolean isOn = true;
+                for (RentalDAO r : rentals) {
+                    if (r.getRentalPeriod().contains(currentMonth))
+                        isOn = false;
+                }
+                if (isOn)
                     housesList.add(h);
             }
 
-            return Response.ok(housesList.toString()).build();
+            return Response.ok(housesList).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -140,26 +171,25 @@ public class HouseResource implements HouseResourceInterface {
 
     @Override
     public Response searchAvailableHouses(String period, String location) {
-        List<HouseDAO> housesList = new ArrayList<>();
+        List<HouseDAO> availableHouses = new ArrayList<>();
         try {
             CosmosPagedIterable<HouseDAO> houseCosmos = houseDb.getHouseByLocation(location);
-            String[] months = period.split(":");
-            Month startMonth = Month.valueOf(months[0].toUpperCase());
-            Month endMonth = Month.valueOf(months[1].toUpperCase());
+            String[] months = period.split("-");
 
-            for (HouseDAO h : houseCosmos) {
-                boolean isOcupied = false;
-                do {
-                    if (h.getAvailable().get(startMonth.toString().toLowerCase()).isOcupied())
-                        isOcupied = true;
-
-                    startMonth = startMonth.plus(1);
-                } while (!startMonth.equals(endMonth));
-                if (!isOcupied)
-                    housesList.add(h);
+            for (HouseDAO h : filterAvailableHouses(houseCosmos, months)) {
+                CosmosPagedIterable<RentalDAO> rentals = rentDb.getHouseById(h.getId());
+                boolean isOn = true;
+                for (RentalDAO r : rentals) {
+                    for (String month : months) {
+                        if (r.getRentalPeriod().contains(month))
+                            isOn = false;
+                    }
+                }
+                if (isOn)
+                    availableHouses.add(h);
             }
 
-            return Response.ok(housesList.toString()).build();
+            return Response.ok(availableHouses).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -193,6 +223,21 @@ public class HouseResource implements HouseResourceInterface {
         }
 
         return Response.ok(map).build();
+    }
+
+    private List<HouseDAO> filterAvailableHouses(CosmosPagedIterable<HouseDAO> houseCosmos, String[] months) {
+        List<HouseDAO> availableHouses = new ArrayList<>();
+
+        for (HouseDAO h : houseCosmos) {
+            for (String m : months) {
+                if (h.getAvailability().contains(m)) {
+                    availableHouses.add(h);
+                    break;
+                }
+            }
+        }
+
+        return availableHouses;
     }
 
 }
