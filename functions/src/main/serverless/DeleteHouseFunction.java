@@ -1,4 +1,4 @@
-package functions.src.main.serverless;
+package src.main.serverless;
 
 import com.azure.cosmos.util.CosmosPagedIterable;
 import com.microsoft.azure.functions.ExecutionContext;

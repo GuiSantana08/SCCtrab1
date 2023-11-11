@@ -1,4 +1,4 @@
-package functions.src.main.serverless;
+package src.main.serverless;
 
 import scc.azure.db.RentalDBLayer;
 import scc.data.RentalDAO;

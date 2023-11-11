@@ -1,4 +1,4 @@
-package scc.azure.functions.src.main.serverless;
+package src.main.serverless;
 
 import com.microsoft.azure.functions.annotation.*;
 
