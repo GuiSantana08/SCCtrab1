@@ -1,4 +1,4 @@
-package scc.db;
+package scc.azure.db;
 
 import com.azure.cosmos.*;
 import com.azure.cosmos.models.CosmosItemRequestOptions;
@@ -6,8 +6,9 @@ import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
+
+import scc.data.QuestionDAO;
 import scc.utils.Constants;
-import scc.utils.QuestionDAO;
 
 public class QuestionDBLayer {
 
@@ -86,6 +87,13 @@ public class QuestionDBLayer {
     public CosmosPagedIterable<QuestionDAO> getQuestions() {
         init();
         return questions.queryItems("SELECT * FROM questions ", new CosmosQueryRequestOptions(), QuestionDAO.class);
+    }
+
+    public CosmosPagedIterable<QuestionDAO> getHouseQuestions(String houseId) {
+        init();
+        return questions.queryItems("SELECT * FROM questions WHERE questions.houseId=\"" + houseId + "\"",
+                new CosmosQueryRequestOptions(),
+                QuestionDAO.class);
     }
 
     public void close() {

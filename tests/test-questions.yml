@@ -15,3 +15,90 @@ config:
 
 
 scenarios:
+  ################################### 1. Testing Questions without Cache and without Authentication
+  - name: "Question Cycle 0-Cache 0-Auth"
+    weight: 1
+    flow: 
+      - loop:
+        - post:
+            url: "/1/question/create"
+            headers:
+              Cookie: "scc:session={{sessionCookie}}"
+              isCacheActive: false
+              isAuthActive: false
+            json:
+              id: "1"
+              postUserId: "1"
+              textMessage: "Isto é uma pergunta sobre uma casa, eu sou o user1"
+        - delete:
+            url: "/1/question/delete?id=1"
+            headers:
+              Cookie: "scc:session={{sessionCookie}}"
+              isCacheActive: false
+              isAuthActive: false 
+        - get:
+            url: "/1/question/list"
+            headers:
+              Cookie: "scc:session={{sessionCookie}}"
+              isCacheActive: false
+              isAuthActive: false
+            afterResponse: "printStatus" 
+        count: "{{ numAuctions }}" 
+  ################################### 2. Testing Questions with Cache but without Authentication
+  - name: "Question Cycle 0-Cache 0-Auth"
+    weight: 1
+    flow: 
+      - loop:
+        - post:
+            url: "/1/question/create"
+            headers:
+              Cookie: "scc:session={{sessionCookie}}"
+              isCacheActive: true
+              isAuthActive: false
+            json:
+              id: "1"
+              postUserId: "1"
+              textMessage: "Isto é uma pergunta sobre uma casa, eu sou o user1"
+        - delete:
+            url: "/1/question/delete?id=1"
+            headers:
+              Cookie: "scc:session={{sessionCookie}}"
+              isCacheActive: true
+              isAuthActive: false 
+        - get:
+            url: "/1/question/list"
+            headers:
+              Cookie: "scc:session={{sessionCookie}}"
+              isCacheActive: true
+              isAuthActive: false
+            afterResponse: "printStatus" 
+        count: "{{ numAuctions }}"
+  ################################### 3. Testing Questions with Cache and Authentication
+  - name: "Question Cycle 0-Cache 0-Auth"
+    weight: 1
+    flow: 
+      - loop:
+        - post:
+            url: "/1/question/create"
+            headers:
+              Cookie: "scc:session={{sessionCookie}}"
+              isCacheActive: true
+              isAuthActive: true
+            json:
+              id: "1"
+              postUserId: "1"
+              textMessage: "Isto é uma pergunta sobre uma casa, eu sou o user1"
+        - delete:
+            url: "/1/question/delete?id=1"
+            headers:
+              Cookie: "scc:session={{sessionCookie}}"
+              isCacheActive: true
+              isAuthActive: true 
+        - get:
+            url: "/1/question/list"
+            headers:
+              Cookie: "scc:session={{sessionCookie}}"
+              isCacheActive: true
+              isAuthActive: true
+            afterResponse: "printStatus" 
+        count: "{{ numAuctions }}"

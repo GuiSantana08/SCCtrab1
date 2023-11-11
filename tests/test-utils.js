@@ -3,6 +3,13 @@ function printStatus(requestParams, response, context, ee, next) {
     return next();
 }
 
+function delay(requestParams, context, ee, next) {
+    setTimeout(function () {
+        next();
+    }, 5000); // delay of 5 seconds
+}
+
 module.exports = {
-    printStatus: printStatus
+    printStatus: printStatus,
+    delay: delay,
 }

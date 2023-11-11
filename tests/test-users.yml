@@ -15,6 +15,7 @@ config:
 
 
 scenarios:
+  ################################### 1. Testing User without Cache and without Authentication
   - name: "User Cycle 0-Cache 0-auth"
     weight: 1
     flow:
@@ -44,9 +45,9 @@ scenarios:
           - post:
               url: "/house/create"
               headers:
-                    Cookie: "scc:session={{sessionCookie}}"
-                    isCacheActive: false
-                    isAuthActive: false
+                Cookie: "scc:session={{sessionCookie}}"
+                isCacheActive: false
+                isAuthActive: false
               json:
                 id: "6"
                 name: "Anibal"
@@ -76,6 +77,7 @@ scenarios:
                 isCacheActive: false
                 isAuthActive: false
         count: "{{ numAuctions }}"
+  ################################### 2. Testing User with Cache but without Authentication
   - name: "User Cycle 1-Cache 0-Auth"
     weight: 0
     flow:
@@ -114,7 +116,8 @@ scenarios:
                 Cookie: "scc:session={{sessionCookie}}"
                 isCacheActive: true
                 isAuthActive: false
-        count: "{{ numAuctions }}" 
+        count: "{{ numAuctions }}"
+  ################################### 3. Testing User with Cache and Authentication       
   - name: "User Cycle 1-Cache 1-Auth"
     weight: 0
     flow:

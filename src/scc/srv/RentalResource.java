@@ -1,5 +1,7 @@
 package scc.srv;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,13 +15,13 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import scc.cache.RedisCache;
-import scc.db.HouseDBLayer;
-import scc.db.RentalDBLayer;
+import scc.azure.cache.RedisCache;
+import scc.azure.db.HouseDBLayer;
+import scc.azure.db.RentalDBLayer;
+import scc.data.HouseDAO;
+import scc.data.Rental;
+import scc.data.RentalDAO;
 import scc.interfaces.RentalResourceInterface;
-import scc.utils.HouseDAO;
-import scc.utils.Rental;
-import scc.utils.RentalDAO;
 
 @Path("/house/{id}/rental") // TODO: instead of inserting house on json, use id to get it
 public class RentalResource implements RentalResourceInterface {
@@ -68,14 +70,13 @@ public class RentalResource implements RentalResourceInterface {
             }
 
             RentalDAO rDAO = new RentalDAO(rental, id);
-
             CosmosItemResponse<RentalDAO> r = rentalDB.updateRental(rDAO);
 
             if (isCacheActive) {
                 cache.setValue(rental.getId(), rental);
             }
 
-            return Response.ok(mapper.writeValueAsString(r)).build();
+            return Response.ok(r.getItem().toString()).build();
 
         } catch (NotAuthorizedException c) {
             return Response.status(Status.NOT_ACCEPTABLE).entity(c.getLocalizedMessage()).build();
@@ -119,16 +120,43 @@ public class RentalResource implements RentalResourceInterface {
     }
 
     @Override
-    public Response listDiscountedRentals() {
+    public Response deleteRental(boolean isCacheActive, boolean isAuthActive, Cookie session, String id) {
+        try {
+            if (isAuthActive) {
+                // UserResource.checkCookieUser(session, house.getUserId()); TODO
+            }
+
+            rentalDB.delRentalById(id);
+
+            if (isCacheActive) {
+                cache.delete(id, RentalDAO.class);
+            }
+
+            return Response.ok().build();
+        } catch (NotAuthorizedException c) {
+            return Response.status(Status.NOT_ACCEPTABLE).entity(c.getLocalizedMessage()).build();
+        } catch (CosmosException c) {
+            return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
+        } catch (Exception e) {
+            return Response.status(500).entity(e.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response listDiscountedRentals(String id) {
         List<RentalDAO> discountedRentals = new ArrayList<>();
         try {
-            CosmosPagedIterable<HouseDAO> houseCosmos = houseDB.getHouses();
+            CosmosPagedIterable<HouseDAO> houseCosmos = houseDB.getHouseById(id);
+            int currentMonth = LocalDate.now().getMonth().getValue();
 
             for (HouseDAO h : houseCosmos) {
                 CosmosPagedIterable<RentalDAO> rentals = rentalDB.getHouseById(h.getId());
                 for (RentalDAO r : rentals) {
-                    if (r.getPrice() < h.getBasePrice())
-                        discountedRentals.add(r);
+                    for (String month : r.getRentalPeriod().split("-")) {
+                        if (r.getPrice() < h.getBasePrice()
+                                && Month.valueOf(month.toUpperCase()).getValue() > currentMonth)
+                            discountedRentals.add(r);
+                    }
                 }
             }
 
@@ -171,5 +199,4 @@ public class RentalResource implements RentalResourceInterface {
 
         return true;
     }
-
 }

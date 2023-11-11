@@ -4,9 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.ws.rs.core.Application;
-import scc.db.HouseDBLayer;
-import scc.db.QuestionDBLayer;
-import scc.db.UserDBLayer;
+import scc.azure.db.HouseDBLayer;
+import scc.azure.db.QuestionDBLayer;
+import scc.azure.db.UserDBLayer;
 
 public class MainApplication extends Application {
 	private Set<Object> singletons = new HashSet<Object>();
@@ -19,7 +19,7 @@ public class MainApplication extends Application {
 		resources.add(RentalResource.class);
 		resources.add(QuestionResource.class);
 		resources.add(MediaResource.class);
-		//TODO: Media Resource is singleton?
+		// TODO: Media Resource is singleton?
 		singletons.add(UserDBLayer.getInstance());
 		singletons.add(HouseDBLayer.getInstance());
 		singletons.add(QuestionDBLayer.getInstance());

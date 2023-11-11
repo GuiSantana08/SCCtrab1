@@ -1,4 +1,4 @@
-package scc.utils;
+package scc.data;
 
 public class House {
 

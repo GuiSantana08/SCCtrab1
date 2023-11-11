@@ -1,4 +1,4 @@
-package scc.cache;
+package scc.azure.cache;
 
 import java.util.concurrent.CancellationException;
 

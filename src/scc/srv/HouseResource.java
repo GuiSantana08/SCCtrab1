@@ -3,35 +3,25 @@ package scc.srv;
 import com.azure.cosmos.CosmosException;
 import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.util.CosmosPagedIterable;
-import com.azure.search.documents.SearchClient;
-import com.azure.search.documents.SearchDocument;
-import com.azure.search.documents.models.SearchOptions;
-import com.azure.search.documents.util.SearchPagedIterable;
-import com.azure.search.documents.util.SearchPagedResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Cookie;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-
-import scc.cache.RedisCache;
-import scc.db.HouseDBLayer;
-import scc.db.RentalDBLayer;
-import scc.db.UserDBLayer;
+import scc.azure.cache.RedisCache;
+import scc.azure.db.HouseDBLayer;
+import scc.azure.db.RentalDBLayer;
+import scc.azure.db.UserDBLayer;
+import scc.azure.search.CSLayer;
+import scc.data.House;
+import scc.data.HouseDAO;
+import scc.data.RentalDAO;
 import scc.interfaces.HouseResourceInterface;
-import scc.search.Props;
-import scc.utils.House;
-import scc.utils.HouseDAO;
-import scc.utils.RentalDAO;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -197,32 +187,29 @@ public class HouseResource implements HouseResourceInterface {
         }
     }
 
-    @GET
-    @Path("/trysearch")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response trySearch() { // TODO make a better function
-        SearchClient searchClient = Props.searchClient();
+    @Override
+    public Response trySearch(String query, String filterType, String filter) {
+        CSLayer search = CSLayer.getInstance();
 
-        String queryText = "anibal";
-        SearchOptions options = new SearchOptions()
-                .setIncludeTotalCount(true)
-                .setFilter("location eq 'Elvas'")
-                .setSelect("rid", "userId", "name", "location", "description")
-                .setSearchFields("name")
-                .setTop(5);
+        String CSFilter = "";
 
-        SearchPagedIterable searchPagedIterable = searchClient.search(queryText, options, null);
-
-        Map<String, Object> map = new HashMap<>();
-        for (SearchPagedResponse resultResponse : searchPagedIterable.iterableByPage()) {
-            resultResponse.getValue().forEach(searchResult -> {
-                for (Map.Entry<String, Object> res : searchResult.getDocument(SearchDocument.class).entrySet()) {
-                    map.put(res.getKey(), res.getValue());
-                }
-            });
+        switch (filterType) {
+            case "name":
+                CSFilter = "name eq '" + filter + "'";
+                break;
+            case "location":
+                CSFilter = "location eq '" + filter + "'";
+                break;
+            case "userId":
+                CSFilter = "userId eq '" + filter + "'";
+                break;
+            default:
+                break;
         }
 
-        return Response.ok(map).build();
+        Map<String, Object> result = search.csQuery(query, CSFilter);
+
+        return Response.ok(result).build();
     }
 
     private List<HouseDAO> filterAvailableHouses(CosmosPagedIterable<HouseDAO> houseCosmos, String[] months) {

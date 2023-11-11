@@ -1,4 +1,4 @@
-package scc.db;
+package scc.azure.db;
 
 import com.azure.cosmos.ConsistencyLevel;
 import com.azure.cosmos.CosmosClient;
@@ -11,8 +11,8 @@ import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
 
+import scc.data.HouseDAO;
 import scc.utils.Constants;
-import scc.utils.HouseDAO;
 
 public class HouseDBLayer {
     private static final String CONNECTION_URL = Constants.camposConst.getDbUrl();

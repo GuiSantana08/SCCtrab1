@@ -1,4 +1,4 @@
-package scc.db;
+package scc.azure.db;
 
 import com.azure.cosmos.*;
 import com.azure.cosmos.models.CosmosItemRequestOptions;
@@ -6,8 +6,9 @@ import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
+
+import scc.data.RentalDAO;
 import scc.utils.Constants;
-import scc.utils.RentalDAO;
 
 public class RentalDBLayer {
 

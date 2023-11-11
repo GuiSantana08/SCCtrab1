@@ -13,11 +13,11 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import scc.cache.RedisCache;
-import scc.db.QuestionDBLayer;
+import scc.azure.cache.RedisCache;
+import scc.azure.db.QuestionDBLayer;
+import scc.data.Question;
+import scc.data.QuestionDAO;
 import scc.interfaces.QuestionResourceInterface;
-import scc.utils.Question;
-import scc.utils.QuestionDAO;
 
 @Path("/house/{id}/question")
 public class QuestionResource implements QuestionResourceInterface {
@@ -43,7 +43,30 @@ public class QuestionResource implements QuestionResourceInterface {
                 cache.setValue(question.getId(), question);
             }
 
-            return Response.ok(mapper.writeValueAsString(q)).build();
+            return Response.ok(q.getItem().toString()).build();
+        } catch (NotAuthorizedException c) {
+            return Response.status(Status.NOT_ACCEPTABLE).entity(c.getLocalizedMessage()).build();
+        } catch (CosmosException c) {
+            return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
+        } catch (Exception e) {
+            return Response.status(500).entity(e.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response deleteQuestion(boolean isCacheActive, boolean isAuthActive, Cookie session, String id) {
+        try {
+            if (isAuthActive) {
+                // UserResource.checkCookieUser(session, house.getUserId()); TODO
+            }
+
+            questionDb.delQuestionById(id);
+
+            if (isCacheActive) {
+                cache.delete(id, QuestionDAO.class);
+            }
+
+            return Response.ok().build();
         } catch (NotAuthorizedException c) {
             return Response.status(Status.NOT_ACCEPTABLE).entity(c.getLocalizedMessage()).build();
         } catch (CosmosException c) {
@@ -58,7 +81,7 @@ public class QuestionResource implements QuestionResourceInterface {
         List<QuestionDAO> questions = new ArrayList<>();
         try {
 
-            CosmosPagedIterable<QuestionDAO> u = questionDb.getQuestions();
+            CosmosPagedIterable<QuestionDAO> u = questionDb.getHouseQuestions(id);
 
             while (u.iterator().hasNext()) {
                 questions.add(u.iterator().next());
@@ -71,5 +94,4 @@ public class QuestionResource implements QuestionResourceInterface {
             return Response.status(500).entity(e.getLocalizedMessage()).build();
         }
     }
-
 }

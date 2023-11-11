@@ -1,4 +1,4 @@
-package scc.utils;
+package scc.data;
 
 /**
  * Represents a User, as returned to the clients

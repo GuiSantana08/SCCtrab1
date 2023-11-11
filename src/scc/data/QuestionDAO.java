@@ -1,4 +1,4 @@
-package scc.utils;
+package scc.data;
 
 public class QuestionDAO {
     private String _rid;
@@ -7,6 +7,10 @@ public class QuestionDAO {
     private String houseId;
     private String postUserId;
     private String textMessage;
+
+    public QuestionDAO() {
+
+    }
 
     public QuestionDAO(Question q) {
         this(q.getId(), "-1", q.getPostUserId(), q.getTextMessage());
