@@ -63,7 +63,7 @@ public class QuestionResource implements QuestionResourceInterface {
             questionDb.delQuestionById(id);
 
             if (isCacheActive) {
-                cache.delete(id, QuestionDAO.class);
+                cache.delete(id);
             }
 
             return Response.ok().build();
@@ -81,13 +81,13 @@ public class QuestionResource implements QuestionResourceInterface {
         List<QuestionDAO> questions = new ArrayList<>();
         try {
 
-            CosmosPagedIterable<QuestionDAO> u = questionDb.getHouseQuestions(id);
+            CosmosPagedIterable<QuestionDAO> u = questionDb.getQuestionsByHouseId(id);
 
             while (u.iterator().hasNext()) {
                 questions.add(u.iterator().next());
             }
 
-            return Response.ok(questions).build();
+            return Response.ok(questions.toArray()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {

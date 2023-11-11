@@ -70,7 +70,7 @@ public class HouseResource implements HouseResourceInterface {
             houseDb.delHouseById(id);
 
             if (isCacheActive) {
-                cache.delete(id, HouseDAO.class);
+                cache.delete(id);
             }
 
             return Response.ok().build();
@@ -141,7 +141,7 @@ public class HouseResource implements HouseResourceInterface {
             String currentMonth = LocalDate.now().getMonth().toString().toLowerCase();
 
             for (HouseDAO h : houseCosmos) {
-                CosmosPagedIterable<RentalDAO> rentals = rentDb.getHouseById(h.getId());
+                CosmosPagedIterable<RentalDAO> rentals = rentDb.getRentalsByHouseId(h.getId());
                 boolean isOn = true;
                 for (RentalDAO r : rentals) {
                     if (r.getRentalPeriod().contains(currentMonth))
@@ -167,7 +167,7 @@ public class HouseResource implements HouseResourceInterface {
             String[] months = period.split("-");
 
             for (HouseDAO h : filterAvailableHouses(houseCosmos, months)) {
-                CosmosPagedIterable<RentalDAO> rentals = rentDb.getHouseById(h.getId());
+                CosmosPagedIterable<RentalDAO> rentals = rentDb.getRentalsByHouseId(h.getId());
                 boolean isOn = true;
                 for (RentalDAO r : rentals) {
                     for (String month : months) {

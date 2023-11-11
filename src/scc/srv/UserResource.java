@@ -82,7 +82,7 @@ public class UserResource implements UserResourceInterface {
             }
 
             if (isCacheActive) {
-                cache.delete(userId, UserDAO.class);
+                cache.delete(userId);
             }
 
             userDb.delUserById(userId);

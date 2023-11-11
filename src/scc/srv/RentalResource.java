@@ -129,7 +129,7 @@ public class RentalResource implements RentalResourceInterface {
             rentalDB.delRentalById(id);
 
             if (isCacheActive) {
-                cache.delete(id, RentalDAO.class);
+                cache.delete(id);
             }
 
             return Response.ok().build();
@@ -150,7 +150,7 @@ public class RentalResource implements RentalResourceInterface {
             int currentMonth = LocalDate.now().getMonth().getValue();
 
             for (HouseDAO h : houseCosmos) {
-                CosmosPagedIterable<RentalDAO> rentals = rentalDB.getHouseById(h.getId());
+                CosmosPagedIterable<RentalDAO> rentals = rentalDB.getRentalsByHouseId(h.getId());
                 for (RentalDAO r : rentals) {
                     for (String month : r.getRentalPeriod().split("-")) {
                         if (r.getPrice() < h.getBasePrice()
