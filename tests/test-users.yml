@@ -7,7 +7,7 @@ config:
     #metricsProcessEndpoint : "myProcessEndpoint"  # function used to aggregate endpoints for statistics
   processor: "./test-utils.js"
   variables:
-    numAuctions: 20
+    numActions: 20
   phases:
   - name: "Warm up"    # WARM UP PHASE: duration: 10s, starting with 1 new client/sec up to 5 new clients/sec
     duration: 1
@@ -15,10 +15,10 @@ config:
 
 
 scenarios:
-  ################################### 1. Testing User without Cache and without Authentication
-  - name: "User Cycle 0-Cache 0-auth"
-    weight: 0
+  - name: "User Testing"
+    weight: 1
     flow:
+  ################################### 1. Testing User without Cache and without Authentication
       - loop:
           - post:
               url: "/user/create"
@@ -76,11 +76,8 @@ scenarios:
                 Cookie: "scc:session={{sessionCookie}}"
                 isCacheActive: false
                 isAuthActive: false
-        count: "{{ numAuctions }}"
+        count: "{{ numActions }}"
   ################################### 2. Testing User with Cache but without Authentication
-  - name: "User Cycle 1-Cache 0-Auth"
-    weight: 0
-    flow:
       - loop:
           - post:
               url: "/user/create"
@@ -139,18 +136,14 @@ scenarios:
                 isCacheActive: true
                 isAuthActive: false
               afterResponse: "printStatus"
-        count: "{{ numAuctions }}"
+        count: "{{ numActions }}"
   ################################### 3. Testing User with Cache and Authentication       
-  - name: "User Cycle 1-Cache 1-Auth"
-    weight: 1
-    flow:
       - loop:
           - post:
               url: "/user/auth"
               json: 
                 username: "1"
                 password: "password"
-              afterResponse: "printStatus"
           - post:
               url: "/user/create"
               headers:
@@ -206,5 +199,5 @@ scenarios:
                 Cookie: "scc:session={{sessionCookie}}"
                 isCacheActive: true
                 isAuthActive: true
-        count: "{{ numAuctions }}"    
+        count: "{{ numActions }}"    
           

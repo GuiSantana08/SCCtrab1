@@ -1,5 +1,4 @@
 scc\azure\db\QuestionDBLayer.class
-scc\azure\functions\src\main\serverless\BlobStoreFunction.class
 scc\interfaces\HouseResourceInterface.class
 scc\srv\ControlResource.class
 scc\interfaces\UserResourceInterface.class
@@ -19,7 +18,6 @@ scc\utils\Session.class
 scc\srv\MainApplication.class
 scc\srv\UserResource.class
 scc\interfaces\QuestionResourceInterface.class
-scc\azure\functions\src\main\serverless\TimerFunction.class
 scc\interfaces\RentalResourceInterface.class
 scc\data\Rental.class
 scc\utils\Hash.class
@@ -29,5 +27,4 @@ scc\data\QuestionDAO.class
 scc\data\UserDAO.class
 scc\data\House.class
 scc\data\HouseDAO.class
-scc\azure\functions\src\main\serverless\DeleteHouseFunction.class
 scc\srv\QuestionResource.class

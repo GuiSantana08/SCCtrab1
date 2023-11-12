@@ -95,7 +95,7 @@ public class HouseResource implements HouseResourceInterface {
                 var newH = houseDb.getHouseById(id);
 
                 if (isCacheActive) {
-                    cache.setValue(id, newH);
+                    cache.setValue(id, newH.iterator().next());
                 }
 
                 return Response.ok(newH.iterator().next()).build();
@@ -207,7 +207,7 @@ public class HouseResource implements HouseResourceInterface {
                 break;
         }
 
-        Map<String, Object> result = search.csQuery(query, CSFilter);
+        List<List<Map.Entry<String, Object>>> result = search.csQuery(query, CSFilter);
 
         return Response.ok(result).build();
     }

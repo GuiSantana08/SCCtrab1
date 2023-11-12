@@ -112,7 +112,7 @@ public class UserResource implements UserResourceInterface {
 
             return Response.ok(u.getItem().toString()).build();
         } catch (NotAuthorizedException c) {
-            return Response.status(Status.NOT_ACCEPTABLE).entity(c.getLocalizedMessage()).build();
+            return Response.status(Status.NOT_ACCEPTABLE).entity(c.getMessage()).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {
@@ -179,8 +179,9 @@ public class UserResource implements UserResourceInterface {
         }
         if (s == null || s.getUsername() == null || s.getUsername().length() == 0)
             throw new NotAuthorizedException("No valid session initialized");
-        if (!s.getUsername().equals(id) && !s.getUsername().equals("admin"))
+        if (!s.getUsername().equals(id))
             throw new NotAuthorizedException("Invalid user : " + s.getUsername());
         return s;
     }
+
 }

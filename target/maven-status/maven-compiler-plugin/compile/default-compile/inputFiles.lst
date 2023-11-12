@@ -1,5 +1,3 @@
-C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\azure\functions\src\main\serverless\BlobStoreFunction.java
-C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\azure\functions\src\main\serverless\TimerFunction.java
 C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\azure\cache\RedisCache.java
 C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\data\UserDAO.java
 C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\interfaces\RentalResourceInterface.java
@@ -29,5 +27,4 @@ C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\srv\Med
 C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\data\House.java
 C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\azure\db\HouseDBLayer.java
 C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\utils\Hash.java
-C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\azure\functions\src\main\serverless\DeleteHouseFunction.java
 C:\Users\Guilherme Campos\Desktop\SCC\Projetos\Projeto1\SCCtrab1\src\scc\interfaces\UserResourceInterface.java

@@ -83,11 +83,11 @@ public class QuestionResource implements QuestionResourceInterface {
 
             CosmosPagedIterable<QuestionDAO> u = questionDb.getQuestionsByHouseId(id);
 
-            while (u.iterator().hasNext()) {
-                questions.add(u.iterator().next());
+            for (QuestionDAO question : u) {
+                questions.add(question);
             }
 
-            return Response.ok(questions.toArray()).build();
+            return Response.ok(questions).build();
         } catch (CosmosException c) {
             return Response.status(c.getStatusCode()).entity(c.getLocalizedMessage()).build();
         } catch (Exception e) {

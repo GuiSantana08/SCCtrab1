@@ -74,7 +74,7 @@ public class RedisCache {
 
     public void putSession(Session session) {
         try (Jedis jedis = RedisCache.getCachePool().getResource()) {
-            String cacheId = "session:" + session.getUid();
+            String cacheId = session.getUid();
             jedis.set(cacheId, session.getUsername());
             jedis.expire(cacheId, TTL);
         } catch (Exception e) {
