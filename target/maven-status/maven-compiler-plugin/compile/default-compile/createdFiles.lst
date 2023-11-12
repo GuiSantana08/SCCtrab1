@@ -4,6 +4,7 @@ scc\srv\ControlResource.class
 scc\interfaces\UserResourceInterface.class
 scc\azure\db\UserDBLayer.class
 scc\azure\search\CSLayer.class
+scc\azure\blob\BlobStoreLayer.class
 scc\azure\cache\RedisCache.class
 scc\data\User.class
 scc\srv\RentalResource.class

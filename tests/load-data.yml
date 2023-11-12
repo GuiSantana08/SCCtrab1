@@ -18,18 +18,17 @@ scenarios:
     flow:
       - loop:                            # let's create 950 users - loop ... count
         - post:                          # First: post image for the user
-            url: "/upload/"
+            url: "/upload"
             beforeRequest: "uploadImageBody"
             headers:
               Content-Type: application/octet-stream
               Accept: application/json
-            afterResponse: "processUploadReply"
+            afterResponse: "processUploadReply" 
         - get: 
             beforeResponse: "selectImageToDownload"
             url: "/download/{{imageId}}"
         - get:
             url: "/list"
-            afterResponse: "printStatus"
         - delete: 
             beforeResponse: "selectImageToDelete"
             url: "/delete/{{deletedId}}"

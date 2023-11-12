@@ -32,9 +32,8 @@ function loadData() {
         basefile = '/images/house.'
     else
         basefile = 'images/house.'
-    for (i = 1; i <= 40; i++) {
+    for (i = 1; i <= 50; i++) {
         var img = fs.readFileSync(basefile + i + '.jpg')
-        images.push(img)
     }
 }
 

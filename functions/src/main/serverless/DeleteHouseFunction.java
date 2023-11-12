@@ -17,9 +17,9 @@ public class DeleteHouseFunction {
 	private static final Logger logger = Logger.getLogger(DeleteHouseFunction.class.getName());
 
 	@FunctionName("DeleteHouseFunction")
-	public void run(
+	public HttpResponseMessage Func(
 			@HttpTrigger(name = "delete", methods = {
-					HttpMethod.DELETE }, route = "house/delete") HttpRequestMessage<Optional<String>> idHTTP,
+					HttpMethod.DELETE }, authLevel = AuthorizationLevel.ANONYMOUS, route = "house/delete") HttpRequestMessage<Optional<String>> idHTTP,
 			final ExecutionContext context) {
 		Optional<String> id = idHTTP.getBody();
 		if (id.isPresent()) {
@@ -33,10 +33,13 @@ public class DeleteHouseFunction {
 
 			// Delete the house itself
 			// Add your logic to delete the house
-
 			logger.info("House deleted successfully.");
+			return idHTTP.createResponseBuilder(HttpStatus.OK).body("House deleted successfully.").build();
+
 		} else {
 			logger.warning("Invalid request. House ID not provided.");
+			return idHTTP.createResponseBuilder(HttpStatus.BAD_REQUEST)
+					.body("Invalid request. House ID not provided.").build();
 		}
 	}
 
