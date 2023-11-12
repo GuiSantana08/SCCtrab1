@@ -11,7 +11,7 @@ import com.azure.storage.blob.models.BlobItem;
 
 public class BlobStoreLayer {
 
-    static String storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=scc2223lab2;AccountKey=aKo5p8YMR6kaaXQdYpakkzC1KDS0rKibpazF4dyV0MpL2ezGcRjzOJEuzCVYZ2lPsgCMWi5L37c/+AStrnDibA==;EndpointSuffix=core.windows.net";
+    static String storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=scc60353;AccountKey=g5h9LhplKvWgDtLtLyLzfPwxpwaxir3abHxIj/nDh0dZAibIDsEMrpCxdn+PfxrrTAyfobZ50oaS+AStH1uIVw==;EndpointSuffix=core.windows.net";
 
     private static BlobStoreLayer instance;
 

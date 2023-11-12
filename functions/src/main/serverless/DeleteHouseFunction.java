@@ -1,9 +1,7 @@
 package src.main.serverless;
 
 import com.azure.cosmos.util.CosmosPagedIterable;
-import com.microsoft.azure.functions.ExecutionContext;
-import com.microsoft.azure.functions.HttpMethod;
-import com.microsoft.azure.functions.HttpRequestMessage;
+import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.*;
 import scc.azure.db.QuestionDBLayer;
 import scc.azure.db.RentalDBLayer;

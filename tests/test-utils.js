@@ -2,12 +2,8 @@ module.exports = {
     printStatus,
     delay,
     uploadImageBody,
-    processUploadReply,
-    selectImageToDownload,
-    selectImageToDelete
 }
 
-var imagesIds = []
 var images = []
 
 const fs = require('fs')
@@ -34,6 +30,7 @@ function loadData() {
         basefile = 'images/house.'
     for (i = 1; i <= 50; i++) {
         var img = fs.readFileSync(basefile + i + '.jpg')
+        images.push(img)
     }
 }
 
@@ -50,32 +47,4 @@ Array.prototype.sample = function () {
 function uploadImageBody(requestParams, context, ee, next) {
     requestParams.body = images.sample()
     return next()
-}
-
-
-function processUploadReply(requestParams, response, context, ee, next) {
-    if (typeof response.body !== 'undefined' && response.body.length > 0) {
-        imagesIds.push(response.body)
-    }
-    return next()
-}
-
-function selectImageToDownload(context, events, done) {
-    if (imagesIds.length > 0) {
-        context.vars.imageId = imagesIds.sample()
-    } else {
-        delete context.vars.imageId
-    }
-    return done()
-}
-
-function selectImageToDelete(context, events, done) {
-    if (imagesIds.length > 0) {
-        id = imagesIds.sample()
-        context.vars.deletedId = id
-        imagesIds.splice(id, 1)
-    } else {
-        delete context.vars.deletedId
-    }
-    return done()
 }

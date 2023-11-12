@@ -7,7 +7,6 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import scc.azure.blob.BlobStoreLayer;
 import scc.interfaces.MediaResourceInterface;
-import scc.utils.Hash;
 
 /**
  * Resource for managing media files, such as images.
@@ -18,8 +17,8 @@ public class MediaResource implements MediaResourceInterface {
 	BlobStoreLayer blob = BlobStoreLayer.getInstance();
 
 	public Response upload(byte[] contents) {
-		String key = Hash.of(contents);
-		blob.upload(key, contents);
+		Double key = Math.random();
+		blob.upload(key.toString(), contents);
 		return Response.ok().entity(key).build();
 	}
 

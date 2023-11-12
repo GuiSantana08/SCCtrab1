@@ -23,14 +23,14 @@ scenarios:
             headers:
               Content-Type: application/octet-stream
               Accept: application/json
-            afterResponse: "processUploadReply" 
+            capture:
+              regexp: "(.+)"
+              as: "imageId" 
         - get: 
-            beforeResponse: "selectImageToDownload"
             url: "/download/{{imageId}}"
         - get:
             url: "/list"
         - delete: 
-            beforeResponse: "selectImageToDelete"
-            url: "/delete/{{deletedId}}"
+            url: "/delete/{{imageId}}"
         count: "{{numImages}}"
 

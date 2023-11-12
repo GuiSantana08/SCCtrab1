@@ -26,7 +26,7 @@ public class TimerFunction {
     RentalDBLayer rentalDB = RentalDBLayer.getInstance();
 
     @FunctionName("deleteRentalsByTime")
-    public void cosmosFunction(@TimerTrigger(name = "periodicSetTime", schedule = "0 0 */1 * * *") String timerInfo,
+    public void cosmosFunction(@TimerTrigger(name = "periodicSetTime", schedule = "0 * * * * *") String timerInfo,
             ExecutionContext context) throws ParseException {
         RentalDBLayer rentalDB = RentalDBLayer.getInstance();
         try (Jedis jedis = RedisCache.getCachePool().getResource()) {

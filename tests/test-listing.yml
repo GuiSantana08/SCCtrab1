@@ -111,7 +111,7 @@ scenarios:
                 Cookie: "scc:session={{sessionCookie}}"
                 isCacheActive: false
                 isAuthActive: false
-          count: "{{numActions}}"
+        count: "{{numActions}}"
   ################################### 2. Testing Rental's listing functions
       - loop:
           - post:
