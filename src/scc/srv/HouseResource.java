@@ -64,7 +64,9 @@ public class HouseResource implements HouseResourceInterface {
     public Response deleteHouse(boolean isCacheActive, boolean isAuthActive, Cookie session, String id) {
         try {
             if (isAuthActive) {
-                // UserResource.checkCookieUser(session, house.getUserId()); TODO
+                var houseIt = houseDb.getHouseById(id).iterator();
+                if (houseIt.hasNext())
+                    UserResource.checkCookieUser(session, houseIt.next().getUserId());
             }
 
             houseDb.delHouseById(id);
